@@ -1,4 +1,4 @@
-# Astro Actions with Hono and Valibot
+# Astro Actions with Hono
 
 Define server actions with built-in validation, error handling, and a pre-built hono client for calling the routes.
 
@@ -16,9 +16,7 @@ bun add @gnosticdev/hono-actions
 
 This package requires:
 
-- `astro`: ^5.13.3
-
-All other dependencies (`hono`, `valibot`, `@hono/valibot-validator`, etc.) are bundled with the integration.
+- `astro`: ^5.13.0
 
 ## Setup
 
@@ -41,7 +39,7 @@ export default defineConfig({
 
 ### 2. Create your actions file
 
-Create a file at one of these locations (the integration will auto-discover):
+If not using a custom actions path, create a file at one of these locations:
 
 - `src/server/actions.ts`
 - `src/hono/actions.ts`
@@ -51,57 +49,61 @@ Create a file at one of these locations (the integration will auto-discover):
 ## Usage
 
 ```typescript
-// src/server/actions.ts
-import { defineHonoAction, HonoActionError } from '@gnosticdev/hono-actions'
-import * as v from 'valibot'
+// src/hono.ts (or any of the supported locations above)
+import { defineHonoAction type HonoEnv } from '@gnosticdev/hono-actions/actions'
+import { z } from 'astro/zod'
+import { Hono } from 'hono'
 
-// Define a simple action
-export const simpleAction = defineHonoAction({
-  path: '/simple',
-  schema: v.object({
-    name: v.string()
+// Define a POST action with Zod validation (no `path` option is used anymore)
+export const myAction = defineHonoAction({
+  schema: z.object({
+    name: z.string()
   }),
   handler: async (input, ctx) => {
-    // input is automatically typed based on schema
+    // `input` is automatically typed from the schema
+    // `ctx` is a strongly-typed Hono Context with your `HonoEnv`
     return { message: `Hello ${input.name}!` }
   }
 })
 
-// Define an action with validation
-export const validatedAction = defineHonoAction({
-  path: '/validated',
-  schema: v.object({
-    name: v.string(),
-    email: v.pipe(v.string(), v.email())
-  }),
+// Define another POST action
+export const anotherAction = defineHonoAction({
+  schema: z.object({ name2: z.string() }),
   handler: async (input, ctx) => {
-    // input is automatically typed based on schema
     return {
-      message: `Hello ${input.name}!`,
-      email: input.email
+      message2: `Hello ${input.name2}!`
     }
   }
 })
 
-// Use custom error handling
-export const errorAction = defineHonoAction({
-  path: '/error',
+// Optional: Define an action without a schema (accepts any JSON)
+export const noSchemaAction = defineHonoAction({
   handler: async (input, ctx) => {
-    if (someCondition) {
+    if (!('name' in input)) {
       throw new HonoActionError({
-        message: 'Custom error message',
-        code: 'EXTERNAL_API_ERROR'
+        message: 'Name is required',
+        code: 'INPUT_VALIDATION_ERROR'
       })
     }
-    return { success: true }
+    return { message: `Hello ${String((input as any).name)}!` }
   }
 })
 
-// Export all actions in a honoActions object
+// You can also define standard Hono routes (GET/PATCH/etc.), not just POST actions.
+// This is useful where standard Astro actions are POST-only.
+const app = new Hono<HonoEnv>()
+const getRoute = app.get('/', (c) => c.json({ message: 'Hi from a get route' }))
+
+// Export all actions and routes in a single `honoActions` object.
+// Each key becomes the route name under your basePath, e.g.:
+//  - POST /api/myAction
+//  - POST /api/anotherAction
+//  - GET  /api/getRoute
 export const honoActions = {
-  simpleAction,
-  validatedAction,
-  errorAction
+  myAction,
+  anotherAction,
+  noSchemaAction,
+  getRoute
 }
 ```
 
@@ -110,22 +112,22 @@ export const honoActions = {
 ```typescript
 // src/pages/example.astro or any .astro file
 ---
-import { honoClient } from '@gnosticdev/hono-actions/client'
+import { honoClient, parseResponse } from '@gnosticdev/hono-actions/client'
 
-const response = await honoClient.simpleAction.$post({
-  json: { name: 'John' }
-})
+// Call a POST action
+const { data: actionRes } = await parseResponse(
+  await honoClient.api.myAction.$post({ json: { name: 'John' } })
+)
 
-let result = null
-if (response.ok) {
-  result = await response.json() // { message: 'Hello John!' }
-} else {
-  console.error(await response.text()) // Error message
-}
+// Call a GET route
+const { message } = await parseResponse(
+  await honoClient.api.getRoute.$get()
+)
 ---
 
 <div>
-  {result && <p>{result.message}</p>}
+  {actionRes && <p>{actionRes.message}</p>}
+  <p>{message}</p>
 </div>
 ```
 
@@ -137,10 +139,9 @@ import { honoClient } from '@gnosticdev/hono-actions/client'
 
 // Make requests from the browser
 const handleSubmit = async (formData: FormData) => {
-  const response = await honoClient.validatedAction.$post({
+  const response = await honoClient.api.anotherAction.$post({
     json: {
-      name: formData.get('name') as string,
-      email: formData.get('email') as string
+      name2: formData.get('name') as string
     }
   })
 
@@ -156,11 +157,12 @@ const handleSubmit = async (formData: FormData) => {
 
 ## Package Structure
 
-This package provides two main entry points:
+This package provides these entry points:
 
-- **`@gnosticdev/hono-actions`** (default): Action definition utilities (`defineHonoAction`, `HonoActionError`, types)
-  - Safe for browser environments
-  - Used in your action files and client-side code
+- **`@gnosticdev/hono-actions/actions`**: Action definition utilities (`defineHonoAction`, `HonoActionError`, `HonoEnv`)
+  - Used in your actions file(s)
+- **`@gnosticdev/hono-actions/client`**: Pre-built Hono client and helpers (`honoClient`, `parseResponse`)
+  - Safe for browser and server environments
 - **`@gnosticdev/hono-actions/integration`**: Astro integration
   - Uses Node.js built-ins (fs, path)
   - Only used in `astro.config.ts`
@@ -175,11 +177,12 @@ The integration accepts the following options:
 ## Features
 
 - ✅ **Type-safe**: Full TypeScript support with automatic type inference
-- ✅ **Validation**: Built-in request validation using Valibot schemas
+- ✅ **Validation**: Built-in request validation using Zod schemas
 - ✅ **Error handling**: Custom error types and automatic error responses
 - ✅ **Auto-discovery**: Automatically finds your actions file
 - ✅ **Client generation**: Pre-built client with full type safety
 - ✅ **Development**: Hot reload support during development
+- ✅ **Flexible routing**: Define standard Hono routes (GET/PATCH/etc.) alongside POST actions
 
 ## Troubleshooting
 
@@ -188,7 +191,7 @@ The integration accepts the following options:
 If you get an error that no actions were found, make sure:
 
 1. Your actions file is in one of the supported locations
-2. You export a `honoActions` object containing your actions
+2. You export a `honoActions` object containing your actions and any Hono routes
 3. The file path matches the `actionsPath` option if you specified one
 
 ### Type errors

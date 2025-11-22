@@ -19,6 +19,15 @@ export interface Bindings {
  * HonoEnv is passed to the Hono context to provide types on `ctx.env`.
  *
  * We are using `HonoEnv` to avoid confusion with the Cloudflare types on `Env` -> which cooresponds to `Bindings`
+ *
+ *  * **NOTE** For Cloudflare users, you can declare this in your src/env.d.ts file to get strong
+ *  typing for `ctx.env`.
+ *
+ * ```ts
+ * declare namespace App {
+ *   interface Locals extends Runtime {}
+ * }
+ * ```
  */
 export interface HonoEnv {
     Bindings: Bindings
@@ -73,7 +82,7 @@ type HonoActionParams<
 }
 
 /**
- * Defines a type-safe Hono action using Zod for input validation.
+ * Defines a POST route with Zod validation for the request body.
  *
  * @param schema - The Zod schema for validation (optional).
  * @param handler - The handler function for the action.

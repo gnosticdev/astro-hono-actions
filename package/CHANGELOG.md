@@ -1,5 +1,17 @@
 # @gnosticdev/hono-actions
 
+## 1.2.5
+
+### Patch Changes
+
+- update readme, add note to HonoEnv type for cloudflare usage
+
+## 1.2.4
+
+### Patch Changes
+
+- move repo to /astro-hono-action, update dependenciess
+
 ## 1.2.3
 
 ### Patch Changes
