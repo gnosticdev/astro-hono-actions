@@ -1,5 +1,23 @@
 # @gnosticdev/hono-actions
 
+## 2.0.5
+
+### Patch Changes
+
+- fix: export of DetailedError
+
+## 2.0.4
+
+### Patch Changes
+
+- fix: export of DetailedError
+
+## 2.0.3
+
+### Patch Changes
+
+- minor fix
+
 ## 2.0.2
 
 ### Patch Changes
