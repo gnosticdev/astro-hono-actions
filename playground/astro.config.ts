@@ -1,41 +1,46 @@
-import cloudflare from '@astrojs/cloudflare'
-import tailwindcss from '@tailwindcss/vite'
-import { createResolver } from 'astro-integration-kit'
-import { hmrIntegration } from 'astro-integration-kit/dev'
-import { defineConfig } from 'astro/config'
+// import cloudflare from "@astrojs/cloudflare";
+import vercel from "@astrojs/vercel";
+// import node from "@astrojs/node";
+import netlify from "@astrojs/netlify";
+import tailwindcss from "@tailwindcss/vite";
+import { createResolver } from "astro-integration-kit";
+import { hmrIntegration } from "astro-integration-kit/dev";
+import { defineConfig } from "astro/config";
 
-const { default: honoActions } = await import('@gnosticdev/hono-actions')
+const { default: honoActions } = await import("@gnosticdev/hono-actions");
 
 // https://astro.build/config
 export default defineConfig({
-    output: 'server',
-    integrations: [
-        honoActions(),
-        hmrIntegration({
-            directory: createResolver(import.meta.url).resolve(
-                '../package/dist',
-            ),
-        }),
-    ],
-    server: {
-        port: 4322,
-    },
-    env: {
-        schema: {
-            TEST_VAR: {
-                access: 'public',
-                context: 'server',
-                type: 'string',
-            },
-        },
-    },
+	output: "server",
+	integrations: [
+		honoActions(),
+		hmrIntegration({
+			directory: createResolver(import.meta.url).resolve("../package/dist"),
+		}),
+	],
+	server: {
+		port: 4322,
+	},
+	env: {
+		schema: {
+			TEST_VAR: {
+				access: "public",
+				context: "server",
+				type: "string",
+			},
+		},
+	},
 
-    adapter: cloudflare(),
-    vite: {
-        server: {
-            strictPort: true,
-            port: 4322,
-        },
-        plugins: [tailwindcss()],
-    },
-})
+	// adapter: cloudflare(),
+	// adapter: vercel(),
+	// 	adapter: node({mode: 'standalone'}),
+	// adapter: netlify(),
+	adapter: vercel(),
+	vite: {
+		server: {
+			strictPort: true,
+			port: 4322,
+		},
+		plugins: [tailwindcss()],
+	},
+});

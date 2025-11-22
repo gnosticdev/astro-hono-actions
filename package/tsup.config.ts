@@ -10,7 +10,7 @@ export default defineConfig({
     dts: true,
     clean: true,
     bundle: true, // Bundle all dependencies except externals
-    splitting: false,
+    splitting: true,
     removeNodeProtocol: false,
     sourcemap: false,
     target: 'es2022',

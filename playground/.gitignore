@@ -4,6 +4,11 @@ dist/
 # generated types
 .astro/
 
+# Local Netlify folder
+.netlify/
+.vercel/
+.wrangler/
+
 # dependencies
 node_modules/
 

@@ -1,14 +1,30 @@
 ---
-import Card from '../components/Card.astro'
+import { undefined } from 'astro:schema'
 import Layout from '../layouts/Layout.astro'
 
-import { honoClient, parseResponse } from '@gnosticdev/hono-actions/client'
+import {
+    honoClient,
+    parseResponse,
+    type DetailedError
+} from '@gnosticdev/hono-actions/client'
 
 const { data: name1 } = await parseResponse(
-    await honoClient.api.myAction.$post({
+    honoClient.api.myAction.$post({
         json: { name: 'John' }
     })
 )
+
+const { error: name1Error } = await parseResponse(
+    honoClient.api.myAction.$post({
+        json: { name: undefined }
+    })
+).catch((err: DetailedError) => {
+    console.error(err)
+    return {
+        data: null,
+        error: err
+    }
+})
 
 const { message } = await parseResponse(await honoClient.api.getRoute.$get())
 
@@ -25,35 +41,73 @@ const { data: name2 } = await parseResponse(
         <div class='mb-4 bg-slate-800 p-4 rounded-md flex flex-col gap-2'>
             <h3 class='text-lg font-bold'>Action with schema</h3>
             <code class='bg-slate-500 p-2 text-xs rounded-md w-fit'
-                >POST /api/myAction</code
-            >
+                >POST /api/myAction
+            </code>
             <p class='text-sm mt-4'>
+                Input: <code
+                    class='text-accent-light font-bold p-2 text-xs rounded-md max-w-1/3 whitespace-pre-wrap'
+                    >{JSON.stringify({ name: 'John' }, null, 2)}</code
+                >
+            </p>
+            <code class='text-sm mt-4'>
                 Response: <span class='text-accent-light font-bold'
                     >{name1.message}</span
                 >
-            </p>
+            </code>
         </div>
+
         <div class='mb-4 bg-slate-800 p-4 rounded-md flex flex-col gap-2'>
             <h3 class='text-lg font-bold'>Action without schema</h3>
             <code class='bg-slate-500 p-2 text-xs rounded-md w-fit'
-                >POST /api/noSchemaAction</code
-            >
+                >POST /api/noSchemaAction
+            </code>
             <p class='text-sm mt-4'>
-                Response: <span class='text-accent-light'>{name2.message2}</span
+                Input: <code
+                    class='text-accent-light font-bold p-2 text-xs rounded-md max-w-1/3 whitespace-pre-wrap'
+                    >{JSON.stringify({ name: 'John' }, null, 2)}</code
                 >
             </p>
+            <code class='text-sm mt-4'>
+                Response: <span class='text-accent-light font-bold'
+                    >{name2.message2}</span
+                >
+            </code>
         </div>
         <div class='mb-4 bg-slate-800 p-4 rounded-md flex flex-col gap-2'>
             <h3 class='text-lg font-bold'>Get Route</h3>
             <code class='bg-slate-500 p-2 text-xs rounded-md w-fit'
                 >GET /api/getRoute</code
             >
-            <p class='text-sm mt-4'>
+            <code class='text-sm mt-4'>
                 Response: <span class='text-accent-light font-bold'
                     >{message}</span
                 >
-            </p>
+            </code>
         </div>
+        {
+            name1Error && (
+                <div class='mb-4 bg-red-900 p-4 rounded-md flex flex-col gap-2'>
+                    <h3 class='text-lg font-bold'>
+                        Action with validation error
+                    </h3>
+                    <code class='bg-slate-500 p-2 text-xs rounded-md w-fit'>
+                        Action: POST /api/myAction
+                    </code>
+                    <code class='bg-slate-500 p-2 text-xs rounded-md w-fit'>
+                        Input:{' '}
+                        <code class='text-accent-light font-bold p-2 text-xs rounded-md max-w-1/3 whitespace-pre-wrap'>
+                            {JSON.stringify({ name: undefined }, null, 2)}
+                        </code>
+                    </code>
+                    <code class='text-sm mt-4'>
+                        Response Error:{' '}
+                        <code class='text-accent-light font-bold p-2 text-xs rounded-md max-w-1/3 whitespace-pre-wrap'>
+                            {JSON.stringify(name1Error, null, 2)}
+                        </code>
+                    </code>
+                </div>
+            )
+        }
     </main>
 </Layout>
 

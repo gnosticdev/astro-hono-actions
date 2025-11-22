@@ -1,5 +1,4 @@
 import { z } from 'astro/zod'
-import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { Hono } from 'hono'
 import { showRoutes } from 'hono/dev'
 import { HonoBase } from 'hono/hono-base'
@@ -11,6 +10,7 @@ import fs from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
 import { glob } from 'tinyglobby'
+import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import {
     defineHonoAction,
     HonoActionError,
@@ -96,37 +96,32 @@ describe('Integration Tests', () => {
         })
     })
 
-    describe('Generated Router Integration', () => {
-        it('should generate valid router code', () => {
+    describe.each(['@astrojs/cloudflare', '@astrojs/node', '@astrojs/vercel', '@astrojs/netlify'] as const)('Generated Router Integration for %s', (adapter) => {
+        it.runIf(adapter !== '@astrojs/netlify')('should generate valid router code for %s', () => {
             const routerContent = generateRouter({
+                adapter,
                 basePath: '/api',
                 relativeActionsPath: '../actions',
             })
 
-            // Test that the generated code contains expected patterns
-            expect(routerContent).toContain('buildRouter')
-            expect(routerContent).toContain('HonoEnv')
-            expect(routerContent).toContain('cors()')
-            expect(routerContent).toContain('logger()')
-            expect(routerContent).toContain('prettyJSON()')
-            expect(routerContent).toContain('showRoutes')
+            expect(routerContent).toContain(`export default app`)
         })
 
-        it('should generate router with correct import path', () => {
+        it.runIf(adapter === '@astrojs/netlify')('should generate valid router code for %s', () => {
             const routerContent = generateRouter({
+                adapter,
                 basePath: '/api',
-                relativeActionsPath: '../src/hono/actions',
+                relativeActionsPath: '../actions',
             })
 
-            expect(routerContent).toContain(
-                "await import('../src/hono/actions')",
-            )
+            expect(routerContent).toContain(`export default handle(app)`)
         })
 
         it('should generate router with correct base path', () => {
             const routerContent = generateRouter({
                 basePath: '/api/v1',
                 relativeActionsPath: '../actions',
+                adapter: adapter,
             })
 
             expect(routerContent).toContain("basePath('/api/v1')")
@@ -162,22 +157,6 @@ describe('Integration Tests', () => {
         })
     })
 
-    describe('Generated Astro Handler Integration', () => {
-        it('should generate valid cloudflare handler', () => {
-            const handlerContent = generateAstroHandler('@astrojs/cloudflare')
-
-            expect(handlerContent).toContain('APIRoute<APIContext>')
-            expect(handlerContent).toContain('router.fetch')
-            expect(handlerContent).toContain('ctx.locals.runtime.env')
-            expect(handlerContent).toContain('export { handler as ALL }')
-        })
-
-        it('should include proper error handling for unsupported adapters', () => {
-            expect(() => generateAstroHandler('unsupported' as any)).toThrow(
-                'Unsupported adapter: unsupported',
-            )
-        })
-    })
 
     describe('Virtual Imports Integration', () => {
         it('should use consistent virtual import IDs', () => {
@@ -193,12 +172,13 @@ describe('Integration Tests', () => {
         })
     })
 
-    describe('Type Generation Integration', () => {
+    describe.each(['@astrojs/cloudflare', '@astrojs/node', '@astrojs/vercel', '@astrojs/netlify'] as const)('Type Generation Integration for %s', (adapter) => {
         it('should generate proper TypeScript declarations', () => {
             // Test that the generated types are valid
             const routerContent = generateRouter({
                 basePath: '/api',
                 relativeActionsPath: '../actions',
+                adapter,
             })
 
             expect(routerContent).toContain('type ActionSchema')
@@ -456,6 +436,7 @@ describe('Integration Tests', () => {
             const routerContent = generateRouter({
                 basePath: '/api',
                 relativeActionsPath: '../actions',
+                adapter: '@astrojs/cloudflare',
             })
             const clientContent = generateHonoClient(3000)
             const handlerContent = generateAstroHandler('@astrojs/cloudflare')

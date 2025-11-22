@@ -15,7 +15,9 @@ node_modules
 out
 dist
 .astro
-.wrangler
+.wrangler/
+.netlify/
+.vercel/
 
 # environment vars
 *.env*
