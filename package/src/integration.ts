@@ -218,7 +218,7 @@ export {}
 declare module '@gnosticdev/hono-actions/client' {
     export const honoClient: typeof import('./client').honoClient
     export const parseResponse: typeof import('./client').parseResponse
-    exoprt type DetailedError = import('./client').DetailedError
+    export type DetailedError = import('./client').DetailedError
 }
 `
                     const adapter = config.adapter?.name
