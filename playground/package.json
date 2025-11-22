@@ -1,6 +1,9 @@
 {
   "dependencies": {
     "@astrojs/cloudflare": "^12.6.11",
+    "@astrojs/netlify": "^6.6.2",
+    "@astrojs/node": "^9.5.1",
+    "@astrojs/vercel": "^9.0.1",
     "@gnosticdev/hono-actions": "workspace:*",
     "@tailwindcss/vite": "^4.1.17",
     "astro": "catalog:",
