@@ -39,7 +39,7 @@ The integration works with all Astro adapters. Here are examples for each:
 // astro.config.ts
 import { defineConfig } from 'astro/config'
 import cloudflare from '@astrojs/cloudflare'
-import honoActions from '@gnosticdev/hono-actions/integration'
+import honoActions from '@gnosticdev/hono-actions'
 
 export default defineConfig({
   output: 'server',
@@ -59,7 +59,7 @@ export default defineConfig({
 // astro.config.ts
 import { defineConfig } from 'astro/config'
 import node from '@astrojs/node'
-import honoActions from '@gnosticdev/hono-actions/integration'
+import honoActions from '@gnosticdev/hono-actions'
 
 export default defineConfig({
   output: 'server',
@@ -81,7 +81,7 @@ export default defineConfig({
 // astro.config.ts
 import { defineConfig } from 'astro/config'
 import vercel from '@astrojs/vercel/serverless'
-import honoActions from '@gnosticdev/hono-actions/integration'
+import honoActions from '@gnosticdev/hono-actions'
 
 export default defineConfig({
   output: 'server',
@@ -101,7 +101,7 @@ export default defineConfig({
 // astro.config.ts
 import { defineConfig } from 'astro/config'
 import netlify from '@astrojs/netlify'
-import honoActions from '@gnosticdev/hono-actions/integration'
+import honoActions from '@gnosticdev/hono-actions'
 
 export default defineConfig({
   output: 'server',
@@ -214,22 +214,28 @@ const { message } = await parseResponse(
 ```typescript
 // In a client-side script or component
 import { honoClient } from '@gnosticdev/hono-actions/client'
+import type { DetailedError } from '@gnosticdev/hono-actions/client'
 
 // Make requests from the browser
 const handleSubmit = async (formData: FormData) => {
-  const response = await honoClient.api.anotherAction.$post({
+  const { data, error } = await parseResponse(await honoClient.api.anotherAction.$post({
     json: {
       name2: formData.get('name') as string
     }
+  }).catch((err: DetailedError) => {
+    console.error('Error:', err)
+    return {
+      data: null,
+      error: err
+    }
   })
 
-  if (response.ok) {
-    const result = await response.json()
-    console.log('Success:', result)
-  } else {
-    const error = await response.text()
-    console.error('Error:', error)
+  if (error){
+    throw new Error(`Action failed: ${error.message}`)
   }
+
+// type safe access to the data
+  console.log('my name is ', data.name2)
 }
 ```
 
@@ -237,11 +243,11 @@ const handleSubmit = async (formData: FormData) => {
 
 This package provides these entry points:
 
-- **`@gnosticdev/hono-actions/actions`**: Action definition utilities (`defineHonoAction`, `HonoActionError`, `HonoEnv`)
+- **`@gnosticdev/hono-actions/actions`**: Action definition utilities (`defineHonoAction`, `HonoActionError`, `HonoEnv` (for cloudflare usage))
   - Used in your actions file(s)
 - **`@gnosticdev/hono-actions/client`**: Pre-built Hono client and helpers (`honoClient`, `parseResponse`)
   - Safe for browser and server environments
-- **`@gnosticdev/hono-actions/integration`**: Astro integration
+- **`@gnosticdev/hono-actions`**: Astro integration
   - Uses Node.js built-ins (fs, path)
   - Only used in `astro.config.ts`
 

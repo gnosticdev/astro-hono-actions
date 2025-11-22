@@ -1,5 +1,11 @@
 # @gnosticdev/hono-actions
 
+## 2.0.0
+
+### Major Changes
+
+- feat(integration): add multi-adapter support for astro adapters (cloudflare, node, vercel, netlify)
+
 ## 1.2.5
 
 ### Patch Changes

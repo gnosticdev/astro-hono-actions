@@ -14,7 +14,7 @@ const { data: name1 } = await parseResponse(
     })
 )
 
-const { error: name1Error } = await parseResponse(
+const { error: name1Error, data } = await parseResponse(
     honoClient.api.myAction.$post({
         json: { name: undefined }
     })
@@ -25,6 +25,12 @@ const { error: name1Error } = await parseResponse(
         error: err
     }
 })
+
+if (name1Error) {
+    console.error(name1Error)
+} else {
+    console.log('name1', data.message)
+}
 
 const { message } = await parseResponse(await honoClient.api.getRoute.$get())
 
