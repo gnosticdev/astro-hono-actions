@@ -1,5 +1,11 @@
 # @gnosticdev/hono-actions
 
+## 2.0.2
+
+### Patch Changes
+
+- fix: use of catalogue in deps
+
 ## 2.0.1
 
 ### Patch Changes
