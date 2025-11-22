@@ -4,9 +4,11 @@
     "url": "https://github.com/gnosticdev"
   },
   "dependencies": {
+    "@hono/standard-validator": "^0.2.0",
     "@hono/zod-validator": "^0.2.2",
     "astro-integration-kit": "^0.19.0",
-    "hono": "catalog:"
+    "hono": "catalog:",
+    "tinyglobby": "^0.2.15"
   },
   "description": "Define server actions with built-in validation, error handling, and a pre-built hono client for calling the routes.",
   "devDependencies": {
@@ -27,13 +29,16 @@
   "files": [
     "dist"
   ],
-  "homepage": "https://github.com/gnosticdev/hono-actions",
+  "homepage": "https://github.com/gnosticdev/astro-hono-actions",
   "keywords": [
     "astro-integration",
     "astro-component",
     "withastro",
     "astro",
-    "hono-actions"
+    "hono",
+    "server",
+    "actions",
+    "cloudflare"
   ],
   "license": "MIT",
   "main": "./dist/index.js",
@@ -51,5 +56,5 @@
   },
   "type": "module",
   "types": "./dist/index.d.ts",
-  "version": "1.2.1"
+  "version": "1.2.3"
 }

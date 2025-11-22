@@ -1,5 +1,17 @@
 # @gnosticdev/hono-actions
 
+## 1.2.3
+
+### Patch Changes
+
+- fix: hono dependency
+
+## 1.2.2
+
+### Patch Changes
+
+- move to vitest, allow for custom hono instances to be merged with actions
+
 ## 1.2.1
 
 ### Patch Changes

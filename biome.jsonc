@@ -1,5 +1,6 @@
 {
-  "$schema": "https://biomejs.dev/schemas/2.2.2/schema.json",
+  "root": false,
+  "$schema": "https://biomejs.dev/schemas/2.3.7/schema.json",
   "assist": {
     "actions": {
       "source": {
@@ -26,16 +27,13 @@
       "!**/.astro",
       "!**/*.astro",
       "!**/cloudflare.d.ts",
-      "!pages-cms",
       "!**/package.json",
-      "!from-wp",
       "**/*.tsx",
       "**/*.ts",
       "**/*.js",
       "**/*.jsx",
       "**/*.json",
       "**/*.jsonc",
-      "!**/*.css",
       "!**/*.md"
     ]
   },
@@ -148,15 +146,6 @@
             "noNonNullAssertion": "off"
           }
         }
-      }
-    },
-    {
-      "formatter": {
-        "enabled": false
-      },
-      "includes": ["src/components/ui/**/*.tsx"],
-      "linter": {
-        "enabled": false
       }
     },
     // TSX files follow same rules as .astro
