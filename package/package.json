@@ -14,7 +14,12 @@
   "devDependencies": {
     "tsup": "^8.5.0",
     "typescript": "catalog:",
-    "vitest": "catalog:"
+    "vitest": "catalog:",
+    "@astrojs/cloudflare": "catalog:",
+    "@astrojs/netlify": "catalog:",
+    "@astrojs/node": "catalog:",
+    "@astrojs/vercel": "catalog:",
+    "astro": "catalog:"
   },
   "exports": {
     ".": {

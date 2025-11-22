@@ -25,12 +25,12 @@ describe('Astro Integration', async () => {
         console.log('tmpDir removed', tmpDir)
     })
 
-    it('[astro sync] generates router, client and injects route/types', async () => {
+    it('[astro sync] generates router for cloudflare, client and injects route/types', async () => {
         const { default: integration } = await import('../src/integration')
         const { default: cloudflare } = await import('@astrojs/cloudflare')
         const { sync } = await import('../../node_modules/astro')
         const spy = vi.fn(integration)
-
+        console.log('sync', sync)
         await sync({
             adapter: cloudflare(),
             root: tmpDir,
@@ -47,4 +47,69 @@ describe('Astro Integration', async () => {
         expect(fs.existsSync(path.join(codeGenDir, 'types.d.ts'))).toBe(true)
         expect(fs.existsSync(path.join(codeGenDir, 'api.ts'))).toBe(true)
     })
+    it ('[astro sync] generates router for node, client and injects route/types', async () => {
+        const { default: integration } = await import('../src/integration')
+        const { default: node } = await import('@astrojs/node')
+        const { sync } = await import('../../node_modules/astro')
+        const spy = vi.fn(integration)
+        await sync({
+            adapter: node({mode: 'standalone'}),
+            root: tmpDir,
+            output: 'server',
+            integrations: [spy()],
+            server: { port: 3333 },
+        })
+        expect(spy).toHaveBeenCalled()
+
+        // // Assert generated files exist
+        expect(fs.existsSync(path.join(codeGenDir, 'router.ts'))).toBe(true)
+        expect(fs.existsSync(path.join(codeGenDir, 'client.ts'))).toBe(true)
+        expect(fs.existsSync(path.join(codeGenDir, 'types.d.ts'))).toBe(true)
+        expect(fs.existsSync(path.join(codeGenDir, 'api.ts'))).toBe(true)
+    })
+
+    it('[astro sync] generates router for netlify, client and injects route/types', async () => {
+        const { default: integration } = await import('../src/integration')
+        const { default: netlify } = await import('@astrojs/netlify')
+        const { sync } = await import('../../node_modules/astro')
+
+        const spy = vi.fn(integration)
+        await sync({
+            adapter: netlify(),
+            root: tmpDir,
+            output: 'server',
+            integrations: [spy()],
+            server: { port: 3333 },
+        })
+        expect(spy).toHaveBeenCalled()
+
+        // // Assert generated files exist
+        expect(fs.existsSync(path.join(codeGenDir, 'router.ts'))).toBe(true)
+        expect(fs.existsSync(path.join(codeGenDir, 'client.ts'))).toBe(true)
+        expect(fs.existsSync(path.join(codeGenDir, 'types.d.ts'))).toBe(true)
+        expect(fs.existsSync(path.join(codeGenDir, 'api.ts'))).toBe(true)
+    })
+
+    it('[astro sync] generates router for vercel, client and injects route/types', async () => {
+        const { default: integration } = await import('../src/integration')
+        const { default: vercel } = await import('@astrojs/vercel')
+        const { sync } = await import('../../node_modules/astro')
+        const spy = vi.fn(integration)
+        await sync({
+            adapter: vercel(),
+            root: tmpDir,
+            output: 'server',
+            integrations: [spy()],
+            server: { port: 3333 },
+        })
+        expect(spy).toHaveBeenCalled()
+
+        // // Assert generated files exist
+        expect(fs.existsSync(path.join(codeGenDir, 'router.ts'))).toBe(true)
+        expect(fs.existsSync(path.join(codeGenDir, 'client.ts'))).toBe(true)
+        expect(fs.existsSync(path.join(codeGenDir, 'types.d.ts'))).toBe(true)
+        expect(fs.existsSync(path.join(codeGenDir, 'api.ts'))).toBe(true)
+    })
+
+    // TODO: edge middleware for vercel and netlify + add types to astro.locals
 })

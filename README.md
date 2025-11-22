@@ -2,6 +2,13 @@
 
 Define server actions with built-in validation, error handling, and a pre-built hono client for calling the routes.
 
+This integration works with all Astro adapters including:
+
+- `@astrojs/cloudflare`
+- `@astrojs/node`
+- `@astrojs/vercel`
+- `@astrojs/netlify`
+
 To see how to get started, check out the [package README](./package/README.md)
 
 ## Licensing

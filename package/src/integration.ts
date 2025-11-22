@@ -12,10 +12,10 @@ import { glob } from 'tinyglobby'
 
 import {
     generateAstroHandler,
-    generateHonoClient,
     generateRouter,
+    generateHonoClient,
 } from './integration-files.js'
-import { reservedRoutes } from './lib/utils.js'
+import { isSupportedAdapter, reservedRoutes, SUPPORTED_ADAPTERS } from './lib/utils.js'
 
 const optionsSchema = z
     .object({
@@ -51,11 +51,6 @@ const ACTION_PATTERNS = [
     'src/hono.ts',
 ]
 
-export const SUPPORTED_ADAPTERS = ['@astrojs/cloudflare'] as const
-type SupportedAdapter = (typeof SUPPORTED_ADAPTERS)[number]
-function isSupportedAdapter(adapter: string): adapter is SupportedAdapter {
-    return SUPPORTED_ADAPTERS.includes(adapter as any)
-}
 /**
  * Astro integration for Hono Actions
  *
@@ -87,7 +82,7 @@ export default defineIntegration({
             name,
             hooks: {
                 'astro:config:setup': async (params) => {
-                    const { logger, injectRoute, createCodegenDir, config } =
+                    const { logger, injectRoute, createCodegenDir, config, } =
                         params
                     const root = config.root.pathname
 
@@ -130,10 +125,28 @@ export default defineIntegration({
                         .split(path.sep)
                         .join('/')
 
+
+                        // make sure we have an adapter
+                        const adapter = params.config.adapter?.name
+                        if (!adapter) {
+                            logger.error(
+                                `No Astro adapter found. Add one of:
+                                - ${SUPPORTED_ADAPTERS.join('\n - ')} to your astro.config.mjs`,
+                            )
+                            return
+                        }
+                        if (!isSupportedAdapter(adapter)) {
+                            logger.error(
+                                `Unsupported adapter: ${adapter}. Only ${SUPPORTED_ADAPTERS.join('\n - ')} are supported`,
+                            )
+                            return
+                        }
+
                     // Generate the router
                     const routerContent = generateRouter({
                         basePath,
                         relativeActionsPath: relFromGenToActions,
+                        adapter,
                     })
 
                     await fs.writeFile(routerPathAbs, routerContent, 'utf-8')
@@ -144,28 +157,7 @@ export default defineIntegration({
                         'api.ts',
                     )
 
-                    // make sure we have an adapter
-                    const adapter = params.config.adapter?.name
-                    if (!adapter) {
-                        logger.error(
-                            `No Astro adapter found. Add one of:
-                            - ${SUPPORTED_ADAPTERS.join('\n - ')} to your astro.config.mjs`,
-                        )
-                        return
-                    }
-
-                    // Generate the astro handler
-                    let astroHandlerContent: string
-
-                    if (isSupportedAdapter(adapter)) {
-                        astroHandlerContent = generateAstroHandler(adapter)
-                    } else {
-                        throw new Error(`Unsupported adapter: ${adapter}`, {
-                            cause: `Only ${SUPPORTED_ADAPTERS.join(
-                                ', ',
-                            )} are supported for now`,
-                        })
-                    }
+                    const astroHandlerContent = generateAstroHandler(adapter)
 
                     await fs.writeFile(
                         astroHandlerPathAbs,
@@ -226,24 +218,29 @@ export {}
 declare module '@gnosticdev/hono-actions/client' {
     export const honoClient: typeof import('./client').honoClient
     export const parseResponse: typeof import('./client').parseResponse
+    exoprt type DetailedError = import('./client').DetailedError
 }
 `
-                    if (!config.adapter?.name) {
+                    const adapter = config.adapter?.name
+                    if (!adapter) {
                         logger.warn('No adapter found...')
                         return
                     }
-                    if (config.adapter.name !== '@astrojs/cloudflare') {
-                        logger.warn('Unsupported adapter...')
+                    if (!isSupportedAdapter(adapter)) {
+                        logger.warn(`Unsupported adapter: ${adapter}. Only ${SUPPORTED_ADAPTERS.join('\n - ')} are supported`,
+                        )
                         return
                     }
 
-                    // add cloudflare types
+                    // add cloudflare only types
+                    if (adapter === '@astrojs/cloudflare') {
                     clientTypes += `
     type Runtime = import('@astrojs/cloudflare').Runtime<Env>
-    declare namespace App {
-        interface Locals extends Runtime {}
-    }
-`
+        declare namespace App {
+            interface Locals extends Runtime {}
+        }
+    `
+                    }
 
                     injectTypes({
                         filename: 'types.d.ts',

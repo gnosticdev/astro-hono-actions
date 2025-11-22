@@ -18,16 +18,94 @@ This package requires:
 
 - `astro`: ^5.13.0
 
+## Supported Adapters
+
+This integration works with all supported Astro adapters:
+
+- `@astrojs/cloudflare`
+- `@astrojs/node`
+- `@astrojs/vercel`
+- `@astrojs/netlify`
+
 ## Setup
 
 ### 1. Add the integration to your Astro config
 
+The integration works with all Astro adapters. Here are examples for each:
+
+#### Cloudflare
+
 ```typescript
 // astro.config.ts
 import { defineConfig } from 'astro/config'
+import cloudflare from '@astrojs/cloudflare'
 import honoActions from '@gnosticdev/hono-actions/integration'
 
 export default defineConfig({
+  output: 'server',
+  adapter: cloudflare(),
+  integrations: [
+    honoActions({
+      basePath: '/api', // Optional: default is '/api'
+      actionsPath: 'src/server/actions.ts' // Optional: custom path to your actions file
+    })
+  ]
+})
+```
+
+#### Node.js
+
+```typescript
+// astro.config.ts
+import { defineConfig } from 'astro/config'
+import node from '@astrojs/node'
+import honoActions from '@gnosticdev/hono-actions/integration'
+
+export default defineConfig({
+  output: 'server',
+  adapter: node({
+    mode: 'standalone' // or 'middleware'
+  }),
+  integrations: [
+    honoActions({
+      basePath: '/api', // Optional: default is '/api'
+      actionsPath: 'src/server/actions.ts' // Optional: custom path to your actions file
+    })
+  ]
+})
+```
+
+#### Vercel
+
+```typescript
+// astro.config.ts
+import { defineConfig } from 'astro/config'
+import vercel from '@astrojs/vercel/serverless'
+import honoActions from '@gnosticdev/hono-actions/integration'
+
+export default defineConfig({
+  output: 'server',
+  adapter: vercel(),
+  integrations: [
+    honoActions({
+      basePath: '/api', // Optional: default is '/api'
+      actionsPath: 'src/server/actions.ts' // Optional: custom path to your actions file
+    })
+  ]
+})
+```
+
+#### Netlify
+
+```typescript
+// astro.config.ts
+import { defineConfig } from 'astro/config'
+import netlify from '@astrojs/netlify'
+import honoActions from '@gnosticdev/hono-actions/integration'
+
+export default defineConfig({
+  output: 'server',
+  adapter: netlify(),
   integrations: [
     honoActions({
       basePath: '/api', // Optional: default is '/api'

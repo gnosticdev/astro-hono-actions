@@ -1,31 +1,31 @@
 {
-  "dependencies": {
-    "@astrojs/cloudflare": "^12.6.11",
-    "@astrojs/netlify": "^6.6.2",
-    "@astrojs/node": "^9.5.1",
-    "@astrojs/vercel": "^9.0.1",
-    "@gnosticdev/hono-actions": "workspace:*",
-    "@tailwindcss/vite": "^4.1.17",
-    "astro": "catalog:",
-    "astro-integration-kit": "^0.19.1",
-    "hono": "catalog:",
-    "tailwindcss": "^4.1.17"
-  },
-  "devDependencies": {
-    "@astrojs/check": "^0.9.4",
-    "@types/node": "^22.17.2",
-    "typescript": "^5.9.2"
-  },
-  "name": "playground",
-  "private": true,
-  "scripts": {
-    "astro": "astro",
-    "build": "astro check && astro build",
-    "dev": "astro dev --force",
-    "preview": "astro preview",
-    "release": "echo 'Playground is not published'",
-    "start": "astro dev"
-  },
-  "type": "module",
-  "version": "0.0.10"
+	"dependencies": {
+		"@astrojs/cloudflare": "catalog:",
+		"@astrojs/netlify": "catalog:",
+		"@astrojs/node": "catalog:",
+		"@astrojs/vercel": "catalog:",
+		"@gnosticdev/hono-actions": "workspace:*",
+		"@tailwindcss/vite": "^4.1.17",
+		"astro": "catalog:",
+		"astro-integration-kit": "^0.19.1",
+		"hono": "catalog:",
+		"tailwindcss": "^4.1.17"
+	},
+	"devDependencies": {
+		"@astrojs/check": "^0.9.4",
+		"@types/node": "^22.17.2",
+		"typescript": "^5.9.2"
+	},
+	"name": "playground",
+	"private": true,
+	"scripts": {
+		"astro": "astro",
+		"build": "astro check && astro build",
+		"dev": "astro dev --force",
+		"preview": "astro preview",
+		"release": "echo 'Playground is not published'",
+		"start": "astro dev"
+	},
+	"type": "module",
+	"version": "0.0.10"
 }

@@ -8,9 +8,7 @@
 	},
 	"devDependencies": {
 		"@biomejs/biome": "2.3.7",
-		"@changesets/cli": "^2.29.6",
-		"@release-it/bumper": "^7.0.5",
-		"release-it": "^19.0.4"
+		"@changesets/cli": "^2.29.6"
 	},
 	"engines": {
 		"node": ">=22.18.0"
@@ -24,7 +22,7 @@
 		"build:package": "bun run --cwd package build",
 		"build:playground": "bun run --cwd playground build --force",
 		"build": "bun run --cwd package build && bun run --cwd playground build --force",
-		"clean": "rm -rf node_modules bun.lock package/dist package/node_modules playground/dist playground/node_modules",
+		"clean": "rm -rf node_modules bun.lock package/dist package/node_modules playground/dist playground/node_modules .astro .netlify .vercel .wrangler",
 		"clean-install": "bun run clean && bun i --no-cache --linker hoisted && bun run build",
 		"lint": "biome check .",
 		"lint:fix": "biome check --write",
@@ -47,7 +45,11 @@
 			"vitest": "^3.2.4",
 			"hono": "^4.10.6",
 			"astro": "^5.15.0",
-			"typescript": "^5.9.2"
+			"typescript": "^5.9.2",
+			"@astrojs/cloudflare": "^12.6.11",
+			"@astrojs/netlify": "^6.6.2",
+			"@astrojs/node": "^9.5.1",
+			"@astrojs/vercel": "^9.0.1"
 		},
 		"packages": [
 			"package",

@@ -1,5 +1,7 @@
-import cloudflare from "@astrojs/cloudflare";
+// import cloudflare from "@astrojs/cloudflare";
 import vercel from "@astrojs/vercel";
+// import node from "@astrojs/node";
+import netlify from "@astrojs/netlify";
 import tailwindcss from "@tailwindcss/vite";
 import { createResolver } from "astro-integration-kit";
 import { hmrIntegration } from "astro-integration-kit/dev";
@@ -30,6 +32,9 @@ export default defineConfig({
 	},
 
 	// adapter: cloudflare(),
+	// adapter: vercel(),
+	// 	adapter: node({mode: 'standalone'}),
+	// adapter: netlify(),
 	adapter: vercel(),
 	vite: {
 		server: {
