@@ -15,6 +15,10 @@ export interface Bindings {
     /** Cloudflare Bindings */
 }
 
+export interface Variables {
+    /** Variables */
+    [key: string]: unknown
+}
 /**
  * HonoEnv is passed to the Hono context to provide types on `ctx.env`.
  *
@@ -31,7 +35,7 @@ export interface Bindings {
  */
 export interface HonoEnv {
     Bindings: Bindings
-    Variables: Record<string, unknown>
+    Variables: Variables
 }
 
 type HonoActionSchema = z.ZodTypeAny

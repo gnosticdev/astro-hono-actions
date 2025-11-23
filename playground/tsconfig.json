@@ -5,5 +5,5 @@
   },
   "exclude": ["dist", "../node_modules"],
   "extends": "astro/tsconfigs/strict",
-  "include": ["src/**/*", "./.astro", "./astro.config.ts", "./package.json"]
+  "include": ["**/*", "./.astro/types.d.ts"]
 }

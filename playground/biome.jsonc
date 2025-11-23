@@ -12,5 +12,12 @@
   "linter": {
     "enabled": true
   },
-  "root": false
+  "root": false,
+  "formatter": {
+    "enabled": true
+  },
+  "overrides": [{
+    "includes": ["src/**/*.ts"],
+  }]
+
 }

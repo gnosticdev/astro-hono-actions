@@ -1,0 +1,13 @@
+{
+  "$schema": "https://www.unpkg.com/wrangler@4.50.0/config-schema.json",
+  "name": "playground",
+  "compatibility_date": "2025-11-23",
+  "compatibility_flags": ["nodejs_compat"],
+  "main": "src/index.ts",
+  "routes": [
+    {
+      "pattern": "**",
+      "zone_name": "playground.gnostic.dev"
+    }
+  ]
+}

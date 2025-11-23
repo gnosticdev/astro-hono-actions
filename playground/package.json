@@ -13,8 +13,9 @@
 	},
 	"devDependencies": {
 		"@astrojs/check": "^0.9.4",
+		"@biomejs/biome": "catalog:",
 		"@types/node": "^22.17.2",
-		"typescript": "^5.9.2"
+		"typescript": "catalog:"
 	},
 	"name": "playground",
 	"private": true,
@@ -24,7 +25,8 @@
 		"dev": "astro dev --force",
 		"preview": "astro preview",
 		"release": "echo 'Playground is not published'",
-		"start": "astro dev"
+		"start": "astro dev",
+		"typegen": "bunx --bun wrangler types src/cloudflare.d.ts"
 	},
 	"type": "module",
 	"version": "0.0.10"

@@ -5,7 +5,7 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "command": "cd playground && ${workspaceFolder}/node_modules/.bin/astro dev --force --open --port 4322 --host",
+      "command": "cd playground && ./node_modules/.bin/astro dev --force --open --port 4322 --host",
       "name": "Development server",
       "request": "launch",
       "type": "node-terminal"

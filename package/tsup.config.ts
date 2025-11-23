@@ -13,6 +13,7 @@ export default defineConfig({
     splitting: true,
     removeNodeProtocol: false,
     sourcemap: false,
+    treeshake: 'safest',
     target: 'es2022',
     minify: false,
     external: [...Object.keys(packageJson.peerDependencies || {})],

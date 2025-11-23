@@ -1,5 +1,11 @@
 # @gnosticdev/hono-actions
 
+## 2.0.6
+
+### Patch Changes
+
+- fix
+
 ## 2.0.5
 
 ### Patch Changes
