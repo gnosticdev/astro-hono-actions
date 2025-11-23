@@ -5,6 +5,7 @@
 		"@astrojs/node": "catalog:",
 		"@astrojs/vercel": "catalog:",
 		"@gnosticdev/hono-actions": "workspace:*",
+		"@inox-tools/request-state": "^0.6.0",
 		"@tailwindcss/vite": "^4.1.17",
 		"astro": "catalog:",
 		"astro-integration-kit": "^0.19.1",

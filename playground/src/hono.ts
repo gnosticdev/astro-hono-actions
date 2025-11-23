@@ -1,33 +1,55 @@
 import {
-type HonoEnv,
-defineHonoAction
+    type HonoEnv,
+    defineHonoAction,
 } from '@gnosticdev/hono-actions/actions'
+import { getState } from '@it-astro:state'
 import { z } from 'astro/zod'
-import { AsyncLocalStorage } from 'async_hooks'
 import { Hono } from 'hono'
-import { contextStorage, getContext } from 'hono/context-storage'
+import { getRequestContext } from './store'
 
+const newApp = new Hono<HonoEnv>()
+newApp.use('*', async (c, next) => {
+    const varsMap = new Map<string, any>()
+
+    varsMap.set('randomKey', (Math.random() * 1008).toFixed(0))
+
+    c.set('db', varsMap)
+
+    return next()
+})
 
 const myAction = defineHonoAction({
     schema: z.object({
         name: z.string(),
     }),
     handler: async (input, ctx) => {
-        const als = new AsyncLocalStorage()
-        const store = als.getStore()
-        console.log('myAction als', store)
-        console.log('myAction ctx', ctx.env.ASTRO_LOCALS.db)
-        return {
-            message: `Hello ${input.name}!`,
-        }
+        const requestContext = getRequestContext()
+        const randomValue = requestContext?.vars.db.get('randomKey')
+
+        console.log('requestContext randomValue', randomValue) // 984
+
+        // or we can use the vars from newApp
+
+        const vars = ctx.var.db
+        const randomValueFromVars = vars.get('randomKey')
+        console.log('varsMap randomValue', randomValueFromVars) // 570
+
+        // console.log('myAction ctx', ctx.env.ASTRO_LOCALS.db)
+        return { data: `${input.name} ${randomValue} ${randomValueFromVars}` } // John 984 570
     },
 })
+
+// mount the route so we can pass the ctx.var values to the action
+const myActionMounted = newApp.route(
+    '/',
+    myAction,
+) as unknown as typeof myAction // need to match the original type for the honoClient
 
 const anotherAction = defineHonoAction({
     schema: z.object({
         name2: z.string(),
     }),
-    handler: async (input, ctx) => {
+    handler: async (input) => {
         return {
             message2: `Hello ${input.name2}!`,
         }
@@ -42,22 +64,14 @@ const noSchemaAction = defineHonoAction({
     },
 })
 
-const appSolo = new Hono<HonoEnv>()
-appSolo.use('*', contextStorage(), async (c, next) => {
-    await next()
-})
-const getRoute = appSolo.get('/', (c) => {
-
-    return c.json({
-        message: 'Hi from a get route',
-    })
-})
-
-console.log('appSolo', appSolo.routes)
-
 export const honoActions = {
-    myAction,
+    appSolo: newApp,
+    getRoute: new Hono<HonoEnv>().get('/', (c) => {
+        return c.json({
+            message: 'Hi from a get route',
+        })
+    }),
+    myAction: myActionMounted,
     anotherAction,
     noSchemaAction,
-    getRoute,
 }

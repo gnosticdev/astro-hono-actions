@@ -19,7 +19,8 @@
     "@astrojs/netlify": "catalog:",
     "@astrojs/node": "catalog:",
     "@astrojs/vercel": "catalog:",
-    "astro": "catalog:"
+    "astro": "catalog:",
+    "@biomejs/biome": "catalog:"
   },
   "exports": {
     ".": {

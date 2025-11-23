@@ -239,6 +239,12 @@ const handleSubmit = async (formData: FormData) => {
 }
 ```
 
+## Advanced Usage
+
+### Using AsyncLocalStorage with Custom Hono Instances
+
+For advanced use cases involving request-scoped data and custom Hono instances, see [docs/async_hooks.md](./docs/async_hooks.md).
+
 ## Augmenting Type Interfaces
 
 When using this library, you may need to augment the type interfaces to add custom types for your environment bindings, Hono context variables, or Astro locals. This is especially important when using the Cloudflare adapter.
@@ -270,52 +276,26 @@ declare module '@gnosticdev/hono-actions/actions' {
         anotherVar: string
     }
 
-    // 2) Add Variables available on `ctx.var.db` or `ctx.get('db`) in hono actions
+    // 2) Add Variables available on `ctx.var.db` or `ctx.var.db.get('randomKey')` in hono actions
     interface HonoEnv {
         Variables: {
-            db: import('node:sqlite').DatabaseSync
+            db: Map<string, any>
         }
         Bindings: Bindings
     }
 }
 
-
-```
-
-### Extending Astro Locals
-
-To add types to `App.Locals` (accessible in Astro pages and components), augment the global `App` namespace:
-
-```typescript
-// src/env.d.ts
-import '@gnosticdev/hono-actions/actions'
-
-declare module '@gnosticdev/hono-actions/actions' {
-    // 1) Extend existing Bindings, with Env from worker-configuration.d.ts
-    interface Bindings extends Env {
-        anotherVar: string
-    }
-
-    // 2) Add Variables available on `ctx.var.db` or `ctx.get('db`) in hono actions
-    interface Variables {
-        db: import('node:sqlite').DatabaseSync
-    }
-
-    interface HonoEnv {
-        Variables: Variables
-        Bindings: Bindings
-    }
-}
-
+// Extend Astro Locals if you want to use in middleware
 // need to add this to global scope bc we have an import in the file
 declare global {
     type Runtime = import('@astrojs/cloudflare').Runtime<Env>
     declare namespace App {
         interface Locals extends Runtime {
-            db: import('node:sqlite').DatabaseSync // this will now be available on both `ctx.var.db` and `Astro.locals.db`
+            db: Map<string, any> // this will now be available on both `ctx.var.db` and `Astro.locals.db`
         }
     }
 }
+
 
 ```
 
@@ -331,7 +311,7 @@ export const myAction = defineHonoAction({
     const kv = ctx.env.CUSTOM_KV
 
     // ctx.var has type: HonoEnv['Variables']
-    const user = ctx.var.user
+    const user = kv.get('user')
 
     return { success: true }
   }

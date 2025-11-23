@@ -8,7 +8,7 @@ declare module '@gnosticdev/hono-actions/actions' {
     }
 
     interface Variables {
-        db: {test: string}
+        db: Map<string, any>
     }
     interface HonoEnv {
         Variables: Variables
@@ -21,7 +21,7 @@ declare global {
     type Runtime = import('@astrojs/cloudflare').Runtime<Env>
     declare namespace App {
         interface Locals extends Runtime {
-            db: {testDb: string} // this will now be available on both `ctx.var.db` and `Astro.locals.db`
+            db: Map<string, any> // this will now be available on both `ctx.var.db` and `Astro.locals.db`
         }
     }
 }
