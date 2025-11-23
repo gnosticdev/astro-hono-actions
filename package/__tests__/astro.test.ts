@@ -47,13 +47,13 @@ describe('Astro Integration', async () => {
         expect(fs.existsSync(path.join(codeGenDir, 'types.d.ts'))).toBe(true)
         expect(fs.existsSync(path.join(codeGenDir, 'api.ts'))).toBe(true)
     })
-    it ('[astro sync] generates router for node, client and injects route/types', async () => {
+    it('[astro sync] generates router for node, client and injects route/types', async () => {
         const { default: integration } = await import('../src/integration')
         const { default: node } = await import('@astrojs/node')
         const { sync } = await import('../../node_modules/astro')
         const spy = vi.fn(integration)
         await sync({
-            adapter: node({mode: 'standalone'}),
+            adapter: node({ mode: 'standalone' }),
             root: tmpDir,
             output: 'server',
             integrations: [spy()],

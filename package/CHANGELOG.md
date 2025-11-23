@@ -1,5 +1,11 @@
 # @gnosticdev/hono-actions
 
+## 2.0.7
+
+### Patch Changes
+
+- add docs for using async_hooks
+
 ## 2.0.6
 
 ### Patch Changes

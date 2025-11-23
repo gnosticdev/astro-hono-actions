@@ -3,6 +3,7 @@ import cloudflare from "@astrojs/cloudflare";
 // import vercel from "@astrojs/vercel";
 // import node from "@astrojs/node";
 // import netlify from "@astrojs/netlify";
+import requestState from "@inox-tools/request-state";
 import tailwindcss from "@tailwindcss/vite";
 import { createResolver } from "astro-integration-kit";
 import { hmrIntegration } from "astro-integration-kit/dev";
@@ -14,6 +15,7 @@ const { default: honoActions } = await import("@gnosticdev/hono-actions");
 export default defineConfig({
 	output: "server",
 	integrations: [
+		requestState(),
 		honoActions(),
 		hmrIntegration({
 			directory: createResolver(import.meta.url).resolve("../package/dist"),
@@ -32,7 +34,7 @@ export default defineConfig({
 		},
 	},
 
-	adapter: cloudflare(),
+	adapter: cloudflare({platformProxy: {enabled: true, remoteBindings: false, persist: true}}),
 	// adapter: vercel(),
 	// 	adapter: node({mode: 'standalone'}),
 	// adapter: netlify(),

@@ -16,8 +16,5 @@
   "formatter": {
     "enabled": true
   },
-  "overrides": [{
-    "includes": ["src/**/*.ts"],
-  }]
 
 }
