@@ -5,6 +5,17 @@ import {
     type DetailedError
 } from '@gnosticdev/hono-actions/client'
 import Layout from '../layouts/Layout.astro'
+import { hc, type ClientRequestOptions } from 'hono/client'
+import type { HonoRouter } from '../../.astro/integrations/_gnosticdev_hono-actions/router'
+
+const client = hc<HonoRouter>('/', {
+    fetch(input, requestInit, Env, executionCtx) {
+        return fetch(input, {
+            ...requestInit,
+            credentials: 'include'
+        })
+    }
+})
 
 const { data: name1 } = await parseResponse(
     honoClient.api.myAction.$post({

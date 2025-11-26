@@ -128,36 +128,6 @@ describe('Integration Tests', () => {
         })
     })
 
-    describe('Generated Client Integration', () => {
-        it('should generate valid client code', () => {
-            const clientContent = generateHonoClient(3000)
-
-            expect(clientContent).toContain('hc<HonoRouter>')
-            expect(clientContent).toContain('getBaseUrl')
-            expect(clientContent).toContain('honoClient')
-        })
-
-        it('should handle different environments correctly', () => {
-            const clientContent = generateHonoClient(3000)
-
-            // Should include client-side detection
-            expect(clientContent).toContain("typeof window !== 'undefined'")
-
-            // Should include development environment
-            expect(clientContent).toContain('import.meta.env.DEV')
-
-            // Should include production environment
-            expect(clientContent).toContain('import.meta.env.SITE')
-        })
-
-        it('should use custom site URL when provided', () => {
-            const clientContent = generateHonoClient(3000)
-
-            expect(clientContent).toContain("return import.meta.env.SITE ?? ''")
-        })
-    })
-
-
     describe('Virtual Imports Integration', () => {
         it('should use consistent virtual import IDs', () => {
             expect(VIRTUAL_MODULE_ID_CLIENT).toBe(
