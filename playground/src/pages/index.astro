@@ -1,9 +1,26 @@
 ---
 
+
 import {
-    honoClient} from '@gnosticdev/hono-actions/client'
+    parseResponse,
+    createHonoClient,type HonoRouter,type DetailedError
+} from '@gnosticdev/hono-actions/client'
 import Layout from '../layouts/Layout.astro'
-import { parseResponse, type DetailedError } from 'hono/client'
+
+console.log('astro vars', {
+    origin: Astro.url.origin,
+    ssr: import.meta.env.SSR,
+    dev: import.meta.env.DEV,
+    site: import.meta.env.SITE,
+    astro: {
+        url: Astro.url,
+        request: Astro.request,
+        response: Astro.response,
+        params: Astro.params,
+    }
+})
+
+const honoClient = createHonoClient<HonoRouter>(Astro.url.origin)
 
 const { data: name1 } = await parseResponse(
     await honoClient.api.myAction.$post({ json: { name: 'John' } })

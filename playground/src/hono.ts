@@ -10,6 +10,8 @@ const newApp = new Hono<HonoEnv>()
 newApp.use('*', async (c, next) => {
     const fakeDb = new Map<string, any>()
 
+    console.log('isSSR', import.meta.env.SSR)
+
     fakeDb.set('randomKey', (Math.random() * 1008).toFixed(0))
 
     c.set('db', fakeDb)

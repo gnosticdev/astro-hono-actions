@@ -129,9 +129,9 @@ import { parseResponse, hc } from 'hono/client'
 import type { DetailedError, ClientRequestOptions } from 'hono/client'
 
 function getBaseUrl() {
-    // client side can just use the base path
+    // client side can just use the origin
     if (typeof window !== 'undefined') {
-        return '/'
+        return window.location.origin
     }
 
     // dev server (dev server) needs to know the port
@@ -140,7 +140,11 @@ function getBaseUrl() {
     }
 
     // server side (production) needs full url
-    return import.meta.env.SITE ?? ''
+    if (import.meta.env.SITE) {
+        return import.meta.env.SITE
+    }
+
+    return '/'
 }
 
 export { parseResponse }
@@ -183,6 +187,9 @@ declare module '@gnosticdev/hono-actions/client' {
     export const createHonoClient: typeof import('./client').createHonoClient
     export type DetailedError = import('./client').DetailedError
     export type ClientRequestOptions = import('./client').ClientRequestOptions
+    /**
+     * The hono actions routes. for use in the hono client
+     */
     export type HonoRouter = import('./client').HonoRouter
 }
 `
