@@ -18,6 +18,7 @@
 		"@types/node": "^22.17.2",
 		"typescript": "catalog:"
 	},
+
 	"name": "playground",
 	"private": true,
 	"scripts": {

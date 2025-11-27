@@ -1,0 +1,25 @@
+# Only format .astro, .md, .mdx, .css files -- ignore all others
+
+# handled by biome
+**/*.ts
+**/*.tsx
+**/*.js
+**/*.jsx
+
+# handled by toml extension
+**/*.toml
+
+# lock files
+**/*.lock
+**/*-lock
+
+# handled by biome
+**/*.json
+**/*.jsonc
+
+# biome doesnt like tailwind so need to use prettier for now.
+# **/*.css
+
+# for Astro projects
+src/assets
+# markdown handled by markdownlint

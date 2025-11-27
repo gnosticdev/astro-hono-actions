@@ -9,7 +9,7 @@ import { createResolver } from "astro-integration-kit";
 import { hmrIntegration } from "astro-integration-kit/dev";
 import { defineConfig } from "astro/config";
 
-const { default: honoActions } = await import("@gnosticdev/hono-actions");
+const { default: honoActions } = await import("../package/dist/index.js");
 
 // https://astro.build/config
 export default defineConfig({

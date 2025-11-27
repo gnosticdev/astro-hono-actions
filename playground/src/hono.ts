@@ -2,18 +2,17 @@ import {
     type HonoEnv,
     defineHonoAction,
 } from '@gnosticdev/hono-actions/actions'
-import { getState } from '@it-astro:state'
 import { z } from 'astro/zod'
 import { Hono } from 'hono'
 import { getRequestContext } from './store'
 
 const newApp = new Hono<HonoEnv>()
 newApp.use('*', async (c, next) => {
-    const varsMap = new Map<string, any>()
+    const fakeDb = new Map<string, any>()
 
-    varsMap.set('randomKey', (Math.random() * 1008).toFixed(0))
+    fakeDb.set('randomKey', (Math.random() * 1008).toFixed(0))
 
-    c.set('db', varsMap)
+    c.set('db', fakeDb)
 
     return next()
 })

@@ -1,69 +1,50 @@
 ---
-import {
-    honoClient,
-    parseResponse,
-    type DetailedError
-} from '@gnosticdev/hono-actions/client'
-import Layout from '../layouts/Layout.astro'
-import { hc, type ClientRequestOptions } from 'hono/client'
-import type { HonoRouter } from '../../.astro/integrations/_gnosticdev_hono-actions/router'
 
-const client = hc<HonoRouter>('/', {
-    fetch(input, requestInit, Env, executionCtx) {
-        return fetch(input, {
-            ...requestInit,
-            credentials: 'include'
-        })
-    }
-})
+import {
+    honoClient} from '@gnosticdev/hono-actions/client'
+import Layout from '../layouts/Layout.astro'
+import { parseResponse, type DetailedError } from 'hono/client'
 
 const { data: name1 } = await parseResponse(
-    honoClient.api.myAction.$post({
-        json: { name: 'John' }
-    })
+    await honoClient.api.myAction.$post({ json: { name: 'John' } })
 ).catch((err: DetailedError) => {
     return {
         data: null,
         error: err
     }
 })
-
-const { error: name1Error, data } = await parseResponse(
-    honoClient.api.myAction.$post({
-        json: { name: undefined }
-    })
-).catch((err: DetailedError) => {
-    return {
-        data: null,
-        error: err
-    }
-})
-
-const { message } = await parseResponse(await honoClient.api.getRoute.$get())
-
 const { data: name2 } = await parseResponse(
-    await honoClient.api.anotherAction.$post({
-        json: { name2: 'Jane' }
-    })
+    await honoClient.api.anotherAction.$post({ json: { name2: 'Jane' } })
 ).catch((err: DetailedError) => {
     return {
         data: null,
         error: err
     }
 })
-
 const { data: noSchemaData } = await parseResponse(
-    await honoClient.api.noSchemaAction.$post({
-        json: { name: 'John' }
-    })
+    await honoClient.api.noSchemaAction.$post({ json: { name: 'John' } })
 ).catch((err: DetailedError) => {
     return {
         data: null,
         error: err
     }
 })
-
-//
+const { message } = await parseResponse(
+    await honoClient.api.getRoute.$get()
+).catch((err: DetailedError) => {
+    return {
+        message: null,
+    }
+})
+const { error: name1Error } = await parseResponse(
+    // @ts-expect-error - test undefined input
+    await honoClient.api.myAction.$post({ json: { name: undefined } })
+).catch((err: DetailedError) => {
+    return {
+        data: null,
+        error: err
+    }
+})
 ---
 
 <Layout title='Hono Actions Playground'>

@@ -102,7 +102,7 @@ export function defineHonoAction<
 
     const route = app.post(
         '/',
-        zValidator('json', schema ?? z.object({}), async (result, c) => {
+        zValidator('json', schema ?? z.never({message: 'No schema provided'}), async (result, c) => {
             if (!result.success) {
                 console.error(result.error.issues)
                 const firstIssue = result.error.issues[0]
