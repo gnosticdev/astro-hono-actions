@@ -17,25 +17,7 @@
 		}
 	},
 	"files": {
-		"includes": [
-			"**",
-			"!**/*.astro"
-			// "!node_modules",
-			// "!**/*/dist",
-			// "!wrangler.json",
-			// "!astro.config.ts",
-			// "!vscode",
-			// "!**/.astro",
-			// "!**/cloudflare.d.ts",
-			// "!**/package.json",
-			// "**/*.tsx",
-			// "**/*.ts",
-			// "**/*.js",
-			// "**/*.jsx",
-			// "**/*.json",
-			// "**/*.jsonc",
-			// "!**/*.md"
-		]
+		"includes": ["**"]
 	},
 	"formatter": {
 		"attributePosition": "multiline",

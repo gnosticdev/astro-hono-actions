@@ -12,15 +12,15 @@
   },
   "description": "Define server actions with built-in validation, error handling, and a pre-built hono client for calling the routes.",
   "devDependencies": {
-    "tsup": "^8.5.0",
-    "typescript": "catalog:",
-    "vitest": "catalog:",
     "@astrojs/cloudflare": "catalog:",
     "@astrojs/netlify": "catalog:",
     "@astrojs/node": "catalog:",
     "@astrojs/vercel": "catalog:",
+    "@biomejs/biome": "catalog:",
     "astro": "catalog:",
-    "@biomejs/biome": "catalog:"
+    "tsup": "^8.5.0",
+    "typescript": "catalog:",
+    "vitest": "^4.0.14"
   },
   "exports": {
     ".": {

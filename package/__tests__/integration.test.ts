@@ -10,7 +10,7 @@ import fs from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
 import { glob } from 'tinyglobby'
-import { afterEach, beforeEach, describe, expect, it } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, test , } from 'vitest'
 import {
     defineHonoAction,
     HonoActionError,
@@ -26,6 +26,8 @@ import {
     generateHonoClient,
     generateRouter,
 } from '../src/integration-files'
+
+
 
 describe('Integration Tests', () => {
     // Mock the generated router for testing
@@ -97,7 +99,7 @@ describe('Integration Tests', () => {
     })
 
     describe.each(['@astrojs/cloudflare', '@astrojs/node', '@astrojs/vercel', '@astrojs/netlify'] as const)('Generated Router Integration for %s', (adapter) => {
-        it.runIf(adapter !== '@astrojs/netlify')('should generate valid router code for %s', () => {
+        test.runIf(adapter !== '@astrojs/netlify')('should generate valid router code for %s', () => {
             const routerContent = generateRouter({
                 adapter,
                 basePath: '/api',
@@ -107,7 +109,7 @@ describe('Integration Tests', () => {
             expect(routerContent).toContain(`export default app`)
         })
 
-        it.runIf(adapter === '@astrojs/netlify')('should generate valid router code for %s', () => {
+        test.runIf(adapter === '@astrojs/netlify')('should generate valid router code for %s', () => {
             const routerContent = generateRouter({
                 adapter,
                 basePath: '/api',
