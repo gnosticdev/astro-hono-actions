@@ -1,16 +1,4 @@
 {
-  "$schema": "https://biomejs.dev/schemas/2.3.7/schema.json",
-  "extends": "//",
-  "files": {
-    "includes": ["!dist"]
-  },
-  "json": {
-    "formatter": {
-      "enabled": false
-    }
-  },
-  "linter": {
-    "enabled": true
-  },
-  "root": false
+  "$schema": "https://biomejs.dev/schemas/2.3.10/schema.json",
+  "extends": "//"
 }

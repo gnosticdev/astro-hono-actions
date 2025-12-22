@@ -271,3 +271,275 @@ showRoutes(app)
 console.log('---------------------------')
 export default app"
 `;
+
+exports[`Astro Integration [astro sync] generates router for cloudflare, client and injects route/types: cloudflare - router.ts 1`] = `
+"import type { HonoEnv, MergeActionKeyIntoPath } from '@gnosticdev/hono-actions/actions'
+import { Hono } from 'hono'
+import { cors } from 'hono/cors'
+import { showRoutes } from 'hono/dev'
+import { logger } from 'hono/logger'
+import { prettyJSON } from 'hono/pretty-json'
+import type { ExtractSchema, MergeSchemaPath } from 'hono/types'
+
+
+async function buildRouter(){
+    type ActionsWithKeyedPaths = MergeActionKeyIntoPath<typeof honoActions>
+    type ActionSchema = ExtractSchema<ActionsWithKeyedPaths[keyof ActionsWithKeyedPaths]>
+    const { honoActions} = await import('../../../src/hono.ts')
+    const app = new Hono<HonoEnv, MergeSchemaPath<ActionSchema, '/api'>>().basePath('/api')
+
+    app.use('*', cors(), logger(), prettyJSON())
+
+    for (const [routeName, action] of Object.entries(honoActions)) {
+        app.route(\`/\${routeName}\`, action)
+    }
+
+    return app
+}
+
+export type HonoRouter = Awaited<ReturnType<typeof buildRouter>>
+
+const app = await buildRouter()
+console.log('------- Hono Routes -------')
+showRoutes(app)
+console.log('---------------------------')
+export default app"
+`;
+
+exports[`Astro Integration [astro sync] generates router for netlify, client and injects route/types: netlify - router.ts 1`] = `
+"import type { HonoEnv, MergeActionKeyIntoPath } from '@gnosticdev/hono-actions/actions'
+import { Hono } from 'hono'
+import { cors } from 'hono/cors'
+import { showRoutes } from 'hono/dev'
+import { logger } from 'hono/logger'
+import { prettyJSON } from 'hono/pretty-json'
+import type { ExtractSchema, MergeSchemaPath } from 'hono/types'
+import { handle } from 'hono/netlify'
+
+async function buildRouter(){
+    type ActionsWithKeyedPaths = MergeActionKeyIntoPath<typeof honoActions>
+    type ActionSchema = ExtractSchema<ActionsWithKeyedPaths[keyof ActionsWithKeyedPaths]>
+    const { honoActions} = await import('../../../src/hono.ts')
+    const app = new Hono<HonoEnv, MergeSchemaPath<ActionSchema, '/api'>>().basePath('/api')
+
+    app.use('*', cors(), logger(), prettyJSON())
+
+    for (const [routeName, action] of Object.entries(honoActions)) {
+        app.route(\`/\${routeName}\`, action)
+    }
+
+    return app
+}
+
+export type HonoRouter = Awaited<ReturnType<typeof buildRouter>>
+
+const app = await buildRouter()
+console.log('------- Hono Routes -------')
+showRoutes(app)
+console.log('---------------------------')
+export default handle(app)"
+`;
+
+exports[`Astro Integration [astro sync] generates router for node, client and injects route/types: node - standalone - router.ts 1`] = `
+"import type { HonoEnv, MergeActionKeyIntoPath } from '@gnosticdev/hono-actions/actions'
+import { Hono } from 'hono'
+import { cors } from 'hono/cors'
+import { showRoutes } from 'hono/dev'
+import { logger } from 'hono/logger'
+import { prettyJSON } from 'hono/pretty-json'
+import type { ExtractSchema, MergeSchemaPath } from 'hono/types'
+
+
+async function buildRouter(){
+    type ActionsWithKeyedPaths = MergeActionKeyIntoPath<typeof honoActions>
+    type ActionSchema = ExtractSchema<ActionsWithKeyedPaths[keyof ActionsWithKeyedPaths]>
+    const { honoActions} = await import('../../../src/hono.ts')
+    const app = new Hono<HonoEnv, MergeSchemaPath<ActionSchema, '/api'>>().basePath('/api')
+
+    app.use('*', cors(), logger(), prettyJSON())
+
+    for (const [routeName, action] of Object.entries(honoActions)) {
+        app.route(\`/\${routeName}\`, action)
+    }
+
+    return app
+}
+
+export type HonoRouter = Awaited<ReturnType<typeof buildRouter>>
+
+const app = await buildRouter()
+console.log('------- Hono Routes -------')
+showRoutes(app)
+console.log('---------------------------')
+export default app"
+`;
+
+exports[`Astro Integration [astro sync] generates router for vercel, client and injects route/types: vercel - router.ts 1`] = `
+"import type { HonoEnv, MergeActionKeyIntoPath } from '@gnosticdev/hono-actions/actions'
+import { Hono } from 'hono'
+import { cors } from 'hono/cors'
+import { showRoutes } from 'hono/dev'
+import { logger } from 'hono/logger'
+import { prettyJSON } from 'hono/pretty-json'
+import type { ExtractSchema, MergeSchemaPath } from 'hono/types'
+
+
+async function buildRouter(){
+    type ActionsWithKeyedPaths = MergeActionKeyIntoPath<typeof honoActions>
+    type ActionSchema = ExtractSchema<ActionsWithKeyedPaths[keyof ActionsWithKeyedPaths]>
+    const { honoActions} = await import('../../../src/hono.ts')
+    const app = new Hono<HonoEnv, MergeSchemaPath<ActionSchema, '/api'>>().basePath('/api')
+
+    app.use('*', cors(), logger(), prettyJSON())
+
+    for (const [routeName, action] of Object.entries(honoActions)) {
+        app.route(\`/\${routeName}\`, action)
+    }
+
+    return app
+}
+
+export type HonoRouter = Awaited<ReturnType<typeof buildRouter>>
+
+const app = await buildRouter()
+console.log('------- Hono Routes -------')
+showRoutes(app)
+console.log('---------------------------')
+export default app"
+`;
+
+exports[`Astro Integration [astro sync] uses the provided integration options for @astrojs/cloudflare: @astrojs/cloudflare - custom options - router.ts 1`] = `
+"import type { HonoEnv, MergeActionKeyIntoPath } from '@gnosticdev/hono-actions/actions'
+import { Hono } from 'hono'
+import { cors } from 'hono/cors'
+import { showRoutes } from 'hono/dev'
+import { logger } from 'hono/logger'
+import { prettyJSON } from 'hono/pretty-json'
+import type { ExtractSchema, MergeSchemaPath } from 'hono/types'
+
+
+async function buildRouter(){
+    type ActionsWithKeyedPaths = MergeActionKeyIntoPath<typeof honoActions>
+    type ActionSchema = ExtractSchema<ActionsWithKeyedPaths[keyof ActionsWithKeyedPaths]>
+    const { honoActions} = await import('../../../../package/src/src/custom-actions.ts')
+    const app = new Hono<HonoEnv, MergeSchemaPath<ActionSchema, '/custom-base-path'>>().basePath('/custom-base-path')
+
+    app.use('*', cors(), logger(), prettyJSON())
+
+    for (const [routeName, action] of Object.entries(honoActions)) {
+        app.route(\`/\${routeName}\`, action)
+    }
+
+    return app
+}
+
+export type HonoRouter = Awaited<ReturnType<typeof buildRouter>>
+
+const app = await buildRouter()
+console.log('------- Hono Routes -------')
+showRoutes(app)
+console.log('---------------------------')
+export default app"
+`;
+
+exports[`Astro Integration [astro sync] uses the provided integration options for @astrojs/netlify: @astrojs/netlify - custom options - router.ts 1`] = `
+"import type { HonoEnv, MergeActionKeyIntoPath } from '@gnosticdev/hono-actions/actions'
+import { Hono } from 'hono'
+import { cors } from 'hono/cors'
+import { showRoutes } from 'hono/dev'
+import { logger } from 'hono/logger'
+import { prettyJSON } from 'hono/pretty-json'
+import type { ExtractSchema, MergeSchemaPath } from 'hono/types'
+import { handle } from 'hono/netlify'
+
+async function buildRouter(){
+    type ActionsWithKeyedPaths = MergeActionKeyIntoPath<typeof honoActions>
+    type ActionSchema = ExtractSchema<ActionsWithKeyedPaths[keyof ActionsWithKeyedPaths]>
+    const { honoActions} = await import('../../../../package/src/src/custom-actions.ts')
+    const app = new Hono<HonoEnv, MergeSchemaPath<ActionSchema, '/custom-base-path'>>().basePath('/custom-base-path')
+
+    app.use('*', cors(), logger(), prettyJSON())
+
+    for (const [routeName, action] of Object.entries(honoActions)) {
+        app.route(\`/\${routeName}\`, action)
+    }
+
+    return app
+}
+
+export type HonoRouter = Awaited<ReturnType<typeof buildRouter>>
+
+const app = await buildRouter()
+console.log('------- Hono Routes -------')
+showRoutes(app)
+console.log('---------------------------')
+export default handle(app)"
+`;
+
+exports[`Astro Integration [astro sync] uses the provided integration options for @astrojs/node: @astrojs/node - custom options - router.ts 1`] = `
+"import type { HonoEnv, MergeActionKeyIntoPath } from '@gnosticdev/hono-actions/actions'
+import { Hono } from 'hono'
+import { cors } from 'hono/cors'
+import { showRoutes } from 'hono/dev'
+import { logger } from 'hono/logger'
+import { prettyJSON } from 'hono/pretty-json'
+import type { ExtractSchema, MergeSchemaPath } from 'hono/types'
+
+
+async function buildRouter(){
+    type ActionsWithKeyedPaths = MergeActionKeyIntoPath<typeof honoActions>
+    type ActionSchema = ExtractSchema<ActionsWithKeyedPaths[keyof ActionsWithKeyedPaths]>
+    const { honoActions} = await import('../../../../package/src/src/custom-actions.ts')
+    const app = new Hono<HonoEnv, MergeSchemaPath<ActionSchema, '/custom-base-path'>>().basePath('/custom-base-path')
+
+    app.use('*', cors(), logger(), prettyJSON())
+
+    for (const [routeName, action] of Object.entries(honoActions)) {
+        app.route(\`/\${routeName}\`, action)
+    }
+
+    return app
+}
+
+export type HonoRouter = Awaited<ReturnType<typeof buildRouter>>
+
+const app = await buildRouter()
+console.log('------- Hono Routes -------')
+showRoutes(app)
+console.log('---------------------------')
+export default app"
+`;
+
+exports[`Astro Integration [astro sync] uses the provided integration options for @astrojs/vercel: @astrojs/vercel - custom options - router.ts 1`] = `
+"import type { HonoEnv, MergeActionKeyIntoPath } from '@gnosticdev/hono-actions/actions'
+import { Hono } from 'hono'
+import { cors } from 'hono/cors'
+import { showRoutes } from 'hono/dev'
+import { logger } from 'hono/logger'
+import { prettyJSON } from 'hono/pretty-json'
+import type { ExtractSchema, MergeSchemaPath } from 'hono/types'
+
+
+async function buildRouter(){
+    type ActionsWithKeyedPaths = MergeActionKeyIntoPath<typeof honoActions>
+    type ActionSchema = ExtractSchema<ActionsWithKeyedPaths[keyof ActionsWithKeyedPaths]>
+    const { honoActions} = await import('../../../../package/src/src/custom-actions.ts')
+    const app = new Hono<HonoEnv, MergeSchemaPath<ActionSchema, '/custom-base-path'>>().basePath('/custom-base-path')
+
+    app.use('*', cors(), logger(), prettyJSON())
+
+    for (const [routeName, action] of Object.entries(honoActions)) {
+        app.route(\`/\${routeName}\`, action)
+    }
+
+    return app
+}
+
+export type HonoRouter = Awaited<ReturnType<typeof buildRouter>>
+
+const app = await buildRouter()
+console.log('------- Hono Routes -------')
+showRoutes(app)
+console.log('---------------------------')
+export default app"
+`;

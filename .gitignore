@@ -26,3 +26,5 @@ dist
 # cloudflare env vars
 .dev.vars
 
+# test output files (that fail to clean up)
+**/astro-tmp*

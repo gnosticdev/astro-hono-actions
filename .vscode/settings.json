@@ -5,7 +5,8 @@
 	"vitest.shellType": "terminal",
 	"vitest.vitestPackagePath": "node_modules/vitest/package.json",
 	"vitest.workspaceConfig": "vitest.config.ts",
-	"biome.lsp.bin": "/Users/divinelight/code/astro/hono-actions/node_modules/.bun/@biomejs+cli-darwin-arm64@2.3.7/node_modules/@biomejs/cli-darwin-arm64/biome",
+	"biome.lsp.bin": "./node_modules/.bin/biome",
+	"biome.configurationPath": "./biome.jsonc",
 	"workbench.colorCustomizations": {
 		"activityBar.activeBackground": "#0f4593",
 		"activityBar.background": "#0f4593",

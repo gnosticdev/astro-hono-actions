@@ -2,23 +2,17 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { sync as astroSync } from 'astro'
+import { setupTestProject } from './test-utils'
 
 describe('Astro Integration', async () => {
-    const TEST_ACTIONS_CONTENT = `import { defineHonoAction } from '@gnosticdev/hono-actions/actions'
-    export const honoActions = {action1: defineHonoAction({handler: async () => {return {message: "Hello World"}}})}`
+
     let tmpDir: string
     let codeGenDir: string
 
     beforeEach(async () => {
-        tmpDir = fs.mkdtempSync(path.join(process.cwd(), 'astro-tmp'))
-        fs.mkdirSync(path.join(tmpDir, 'src'), { recursive: true })
-        fs.writeFileSync(path.join(tmpDir, 'src/hono.ts'), TEST_ACTIONS_CONTENT)
-        codeGenDir = path.join(
-            tmpDir,
-            '.astro',
-            'integrations',
-            '_gnosticdev_hono-actions',
-        )
+        const testProject = setupTestProject()
+        tmpDir = testProject.tmpDir
+        codeGenDir = testProject.codeGenDir
     })
 
     afterEach(() => {

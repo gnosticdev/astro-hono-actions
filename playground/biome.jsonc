@@ -1,20 +1,4 @@
 {
-  "$schema": "https://biomejs.dev/schemas/2.3.7/schema.json",
-  "extends": "//",
-  "files": {
-    "includes": ["!**/package.json", "!**/dist", "!**/.astro", "!**/*.astro"]
-  },
-  "json": {
-    "formatter": {
-      "enabled": false
-    }
-  },
-  "linter": {
-    "enabled": true
-  },
-  "root": false,
-  "formatter": {
-    "enabled": true
-  },
-
+  "$schema": "https://biomejs.dev/schemas/2.3.10/schema.json",
+  "extends": "//"
 }
