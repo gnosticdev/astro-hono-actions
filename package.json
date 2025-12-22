@@ -1,64 +1,63 @@
 {
-	"name": "root",
-	"version": "1.0.7",
-	"repository": {
-		"directory": "package",
-		"type": "git",
-		"url": "https://github.com/gnosticdev/astro-hono-actions"
-	},
-	"devDependencies": {
-		"@changesets/cli": "^2.29.6",
-		"vitest": "^4.0.16"
-	},
-	"engines": {
-		"node": ">=22.18.0"
-	},
-	"packageManager": "bun@1.2.21",
-	"private": true,
-	"publishConfig": {
-		"access": "restricted"
-	},
-	"scripts": {
-		"build:package": "bun run --cwd package build",
-		"build:playground": "bun run --cwd playground build --force",
-		"build": "bun run build:package && bun run build:playground",
-		"clean": "rm -rf node_modules bun.lock package/dist package/node_modules playground/dist playground/node_modules playground/.astro playground/.netlify playground/.vercel playground/.wrangler .astro .netlify .vercel .wrangler",
-		"clean-install": "bun run clean && bun i --no-cache --linker hoisted && bun run build",
-		"lint": "biome check .",
-		"lint:fix": "biome check --write",
-		"dev:package": "bun run --cwd package dev",
-		"dev:playground": "bun run --cwd playground dev",
-		"prepublish": "bun run --cwd package typecheck && bun vitest --run && bun run build:package",
-		"publish": "bun changeset && bun changeset version && bun changeset publish",
-		"release": "gh release create $(git tag --points-at HEAD) --generate-notes",
-		"test": "vitest",
-		"typecheck": "bun --cwd package typecheck",
-		"version": "bun changeset version"
-	},
-	"trustedDependencies": [
-		"@parcel/watcher",
-		"@tailwindcss/oxide",
-		"esbuild",
-		"sharp",
-		"workerd"
-	],
-	"workspaces": {
-		"catalog": {
-			"hono": "^4.10.6",
-			"astro": "^5.16.0",
-			"typescript": "^5.9.3",
-			"@astrojs/cloudflare": "^12.6.11",
-			"@astrojs/netlify": "^6.6.2",
-			"@astrojs/node": "^9.5.1",
-			"@astrojs/vercel": "^9.0.1",
-			"@biomejs/biome": "2.3.10"
-		},
-		"packages": [
-			"package",
-			"playground"
-		]
-	},
-	"dependencies": {
-		"@biomejs/biome": "^2.3.10"
-	}
+  "name": "root",
+  "version": "1.0.7",
+  "repository": {
+    "directory": "package",
+    "type": "git",
+    "url": "https://github.com/gnosticdev/astro-hono-actions"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.3.10",
+    "@changesets/cli": "^2.29.6",
+    "vitest": "^4.0.16",
+    "typescript": "^5.9.3"
+  },
+  "engines": {
+    "node": ">=22.18.0"
+  },
+  "packageManager": "bun@1.2.21",
+  "private": true,
+  "publishConfig": {
+    "access": "restricted"
+  },
+  "scripts": {
+    "build:package": "bun run --cwd package build",
+    "build:playground": "bun run --cwd playground build --force",
+    "build": "bun run build:package && bun run build:playground",
+    "clean": "rm -rf node_modules bun.lock package/dist package/node_modules playground/dist playground/node_modules playground/.astro playground/.netlify playground/.vercel playground/.wrangler .astro .netlify .vercel .wrangler",
+    "clean-install": "bun run clean && bun i --no-cache --linker hoisted && bun run build",
+    "lint": "biome check .",
+    "lint:fix": "biome check --write",
+    "dev:package": "bun run --cwd package dev",
+    "dev:playground": "bun run --cwd playground dev",
+    "prepublish": "bun run --cwd package typecheck && bun vitest --run && bun run build:package",
+    "publish": "bun changeset && bun changeset version && bun changeset publish",
+    "release": "gh release create $(git tag --points-at HEAD) --generate-notes",
+    "test": "vitest",
+    "typecheck": "bun --cwd package typecheck",
+    "version": "bun changeset version"
+  },
+  "trustedDependencies": [
+    "@parcel/watcher",
+    "@tailwindcss/oxide",
+    "esbuild",
+    "sharp",
+    "workerd"
+  ],
+  "workspaces": {
+    "catalog": {
+      "hono": "^4.10.6",
+      "astro": "^5.16.0",
+      "typescript": "^5.9.3",
+      "@astrojs/cloudflare": "^12.6.11",
+      "@astrojs/netlify": "^6.6.2",
+      "@astrojs/node": "^9.5.1",
+      "@astrojs/vercel": "^9.0.1",
+      "@biomejs/biome": "2.3.10"
+    },
+    "packages": [
+      "package",
+      "playground"
+    ]
+  }
 }

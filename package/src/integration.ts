@@ -16,7 +16,11 @@ import {
     generateHonoClient,
     generateIntegrationTypes,
 } from './integration-files.js'
-import { isSupportedAdapter, reservedRoutes, SUPPORTED_ADAPTERS } from './lib/utils.js'
+import {
+    isSupportedAdapter,
+    reservedRoutes,
+    SUPPORTED_ADAPTERS,
+} from './lib/utils.js'
 
 const optionsSchema = z
     .object({
@@ -59,8 +63,11 @@ const ACTION_PATTERNS = [
  * generates type-safe client code, and sets up API routes.
  *
  * Supprted Adapters:
- * - Cloudflare
- * - (more to come)
+ * - @astrojs/cloudflare
+ * - @astrojs/node
+ * - @astrojs/vercel
+ * - @astrojs/netlify
+ *
  *
  * @param options - Configuration options for the integration
  * @param options.basePath - Base path for API routes (default: '/api')
@@ -83,7 +90,7 @@ export default defineIntegration({
             name,
             hooks: {
                 'astro:config:setup': async (params) => {
-                    const { logger, injectRoute, createCodegenDir, config, } =
+                    const { logger, injectRoute, createCodegenDir, config } =
                         params
                     const root = config.root.pathname
 
@@ -126,22 +133,21 @@ export default defineIntegration({
                         .split(path.sep)
                         .join('/')
 
-
-                        // make sure we have an adapter
-                        const adapter = params.config.adapter?.name
-                        if (!adapter) {
-                            logger.error(
-                                `No Astro adapter found. Add one of:
+                    // make sure we have an adapter
+                    const adapter = params.config.adapter?.name
+                    if (!adapter) {
+                        logger.error(
+                            `No Astro adapter found. Add one of:
                                 - ${SUPPORTED_ADAPTERS.join('\n - ')} to your astro.config.mjs`,
-                            )
-                            return
-                        }
-                        if (!isSupportedAdapter(adapter)) {
-                            logger.error(
-                                `Unsupported adapter: ${adapter}. Only ${SUPPORTED_ADAPTERS.join('\n - ')} are supported`,
-                            )
-                            return
-                        }
+                        )
+                        return
+                    }
+                    if (!isSupportedAdapter(adapter)) {
+                        logger.error(
+                            `Unsupported adapter: ${adapter}. Only ${SUPPORTED_ADAPTERS.join('\n - ')} are supported`,
+                        )
+                        return
+                    }
 
                     // Generate the router
                     const routerContent = generateRouter({
@@ -171,6 +177,10 @@ export default defineIntegration({
                         codeGenDir.pathname,
                         'client.ts',
                     )
+                    // if no site in config, the client will default to '/'. this is a problem during SSR when there is no origin.
+                    if (!config.site){
+                        logger.warn('No site url found in astro config, add one if you want to use the hono client with SSR')
+                    }
                     const clientContent = generateHonoClient(config.server.port)
                     await fs.writeFile(clientPathAbs, clientContent, 'utf-8')
 
@@ -208,16 +218,18 @@ export default defineIntegration({
                         return
                     }
                     if (!isSupportedAdapter(adapter)) {
-                        logger.warn(`Unsupported adapter: ${adapter}. Only ${SUPPORTED_ADAPTERS.join('\n - ')} are supported`,
+                        logger.warn(
+                            `Unsupported adapter: ${adapter}. Only ${SUPPORTED_ADAPTERS.join('\n - ')} are supported`,
                         )
                         return
                     }
 
-                    const { actionTypes, clientTypes } = generateIntegrationTypes(adapter)
+                    const { actionTypes, clientTypes } =
+                        generateIntegrationTypes(adapter)
 
                     injectTypes({
                         filename: 'actions.d.ts',
-                            content: actionTypes,
+                        content: actionTypes,
                     })
 
                     injectTypes({

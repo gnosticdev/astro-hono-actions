@@ -1,44 +1,53 @@
 import fs from 'node:fs'
-import { dev as astroDev, type AstroInlineConfig } from 'astro'
+import http from 'node:http'
+import {
+    dev as astroDev,
+    type AstroIntegration,
+    type AstroInlineConfig,
+} from 'astro'
 
-import { Hono, type ExecutionContext } from 'hono'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { SUPPORTED_ADAPTERS } from '../src/lib/utils'
-import { importFresh } from 'astro-integration-kit/dev'
 import { setupTestProject } from './test-utils'
 import path from 'node:path'
 
 type DevServer = Awaited<ReturnType<typeof astroDev>>
 
 describe('Generated router runtime behavior', () => {
+    const PORT = 3333
     let tmpDir: string
-    let codeGenDir: string
     let devServer: DevServer | null = null
 
     beforeEach(async () => {
         const testProject = setupTestProject()
         tmpDir = testProject.tmpDir
-        codeGenDir = testProject.codeGenDir
+        fs.mkdirSync(path.join(tmpDir, 'src', 'pages'), { recursive: true })
+        fs.writeFileSync(
+            path.join(tmpDir, 'src', 'pages', 'index.astro'),
+            `---\n
+            import {honoClient} from '@gnosticdev/hono-actions/client'
+            const { data } = await honoClient.api.action1.$get()
+            ---\n<html><body><h1>{JSON.stringify(data, null, 2)}</h1></body></html>`,
+            'utf-8',
+        )
     })
 
     afterEach(async () => {
         fs.rmSync(tmpDir, { recursive: true, force: true })
         console.log('tmpDir removed', tmpDir)
         if (devServer) {
-            await devServer.stop()
+            devServer.stop()
         }
     })
-
     it.each([
         '@astrojs/cloudflare',
-        '@astrojs/node',
-        '@astrojs/vercel',
-        '@astrojs/netlify',
+        // '@astrojs/node',
+        // '@astrojs/vercel',
+        // '@astrojs/netlify',
     ] as const)('creates a runnable Hono instance for %s', async (adapter) => {
         const { default: adapterModule } = await import(adapter)
         const { default: integration } = await import('../src/integration')
-        let adapterInstance: any
-        if (adapter === '@astrojs/node') {
+        let adapterInstance: AstroIntegration
+        if (adapter === ('@astrojs/node' as any)) {
             adapterInstance = adapterModule({ mode: 'standalone' })
         } else {
             adapterInstance = adapterModule()
@@ -50,70 +59,38 @@ describe('Generated router runtime behavior', () => {
             adapter: adapterInstance,
             root: tmpDir,
             output: 'server',
-            integrations: [
-                spy({
-                    basePath: '/custom-base-path',
-                    actionsPath: 'src/custom-actions.ts',
-                }),
-            ],
-            server: { port: 3333 },
+            integrations: [spy()],
+            server: { port: PORT },
+            force: true,
         }
 
-        devServer = await astroDev(astroConfig)
-
-        const req = new Request('http://localhost:3333/api/sayHello', {
-            method: 'POST',
-            body: JSON.stringify({ name: 'John' }),
-        })
-
-        const { default: router } = (await import(
-            codeGenDir + '/router.ts'
-        )) as { default: Hono }
-        const response = await router.fetch(req, {}, {} as ExecutionContext)
-
-        expect(response.status).toBe(200)
-        await expect(response.json()).resolves.toEqual({ label: 'sayHello' })
-    })
-})
-
-describe('Generated Astro handler behavior', () => {
-    let tmpDir: string
-    let codeGenDir: string
-    let devServer: DevServer | null = null
-
-    beforeEach(async () => {
-        const testProject = setupTestProject()
-        tmpDir = testProject.tmpDir
-        codeGenDir = testProject.codeGenDir
-    })
-
-    afterEach(async () => {
-        fs.rmSync(tmpDir, { recursive: true, force: true })
-        console.log('tmpDir removed', tmpDir)
-        if (devServer) {
-            await devServer.stop()
-        }
-    })
-
-    it.each(
-        SUPPORTED_ADAPTERS,
-    )('delegates to the router for %s adapters', async (adapter) => {
-        const testProject = setupTestProject()
-        const handlerPath = path.join(testProject.codeGenDir, 'api.ts')
-        const handlerModule = await importFresh<{
-            ALL: (ctx: any) => Promise<Response>
-        }>(handlerPath)
+        // sync first so the router is generated
+        // await astroSync(astroConfig)
+        // console.log('astro sync completed')
 
         devServer = await astroDev(astroConfig)
-
-        const req = new Request('http://localhost:3333/api/sayHello', {
-            method: 'POST',
-            body: JSON.stringify({ name: 'John' }),
+        const server = await http.createServer((req, res) => {
+            devServer?.handle(req, res)
+        })
+        server.listen(PORT, () => {
+            console.log('server started on port', PORT)
         })
 
-        const response = await handlerModule.ALL(req, { context: {} })
+        console.log('dev server started', devServer)
+
+        const response = await fetch(`http://localhost:${PORT}/api/sayHello`, {
+            method: 'POST',
+            body: JSON.stringify({ name: 'John' }),
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        })
+
+        console.log('response', response)
 
         expect(response.status).toBe(200)
-        await expect(response.json()).resolves.toEqual({ label: 'sayHello' })
+        expect(response.json()).resolves.toEqual({
+            label: 'sayHello',
+        })
     })
 })

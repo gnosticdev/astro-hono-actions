@@ -3,20 +3,33 @@ import path from 'node:path'
 import type { SUPPORTED_ADAPTERS } from '../src/lib/utils'
 import { generateAstroHandler } from '../src/integration-files'
 import { generateRouter } from '../src/integration-files'
+import { fileURLToPath } from 'node:url'
 
-const TEST_ACTIONS_CONTENT = `import { defineHonoAction } from '@gnosticdev/hono-actions/actions'
-    export const honoActions = {action1: defineHonoAction({handler: async () => {return {message: "Hello World"}}})}`
+const TEST_ACTIONS_CONTENT = `
+import { defineHonoAction } from '@gnosticdev/hono-actions/actions'
+
+export const honoActions = {
+    action1: defineHonoAction({handler: async () => {return {message: "Hello World"}}}),
+}`
 
 export function setupTestProject({
-    actionsContent = TEST_ACTIONS_CONTENT,
+    actionsContent,
     actionsPath = 'src/hono.ts',
 }: {
     actionsContent?: string
     actionsPath?: string
 } = {}) {
-    const tmpDir = fs.mkdtempSync(path.join(process.cwd(), 'astro-tmp'))
+    // add the tmpdir inside this folder so astro is available to the test
+    const __dirname = path.dirname(fileURLToPath(import.meta.url))
+    console.log('__dirname', __dirname)
+    const tmpDir = fs.mkdtempSync(path.resolve(__dirname, 'astro-tmp'))
+
     fs.mkdirSync(path.join(tmpDir, 'src'), { recursive: true })
-    fs.writeFileSync(path.join(tmpDir, actionsPath), actionsContent)
+    fs.writeFileSync(
+        path.join(tmpDir, actionsPath),
+        actionsContent || TEST_ACTIONS_CONTENT,
+    )
+
     const codeGenDir = path.join(
         tmpDir,
         '.astro',
@@ -37,9 +50,11 @@ export const emitRouter = async (
     const routerSource = generateRouter({
         adapter,
         basePath: '/api',
-        relativeActionsPath: './actions.js',
+        relativeActionsPath: './actions.ts',
     })
-    const routerPath = path.join(projectRoot, 'router.js')
+    const routerPath = path.join(projectRoot, 'router.ts')
+
+    await fs.writeFileSync(routerPath, routerSource, 'utf-8')
 
     return routerPath
 }
@@ -52,7 +67,9 @@ const emitHandler = async (
     adapter: (typeof SUPPORTED_ADAPTERS)[number],
 ) => {
     const handlerSource = generateAstroHandler(adapter)
-    const handlerPath = path.join(projectRoot, 'api.js')
+    const handlerPath = path.join(projectRoot, 'api.ts')
+
+    await fs.writeFileSync(handlerPath, handlerSource, 'utf-8')
 
     return handlerPath
 }
