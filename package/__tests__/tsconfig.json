@@ -1,8 +1,0 @@
-{
-  "compilerOptions": {
-    "rootDir": "../",
-    "noUncheckedIndexedAccess": false,
-    "types": ["hono", "vitest"]
-  },
-  "extends": "../tsconfig.json"
-}

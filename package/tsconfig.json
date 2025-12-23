@@ -18,7 +18,8 @@
     "strictNullChecks": true,
     "target": "ES2022",
     "types": ["hono", "astro", "vitest"],
-    "verbatimModuleSyntax": true
+    "verbatimModuleSyntax": true,
+    "rootDir": "./"
   },
   "exclude": ["node_modules", "dist"]
 }

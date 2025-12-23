@@ -6,6 +6,7 @@
   "commit": false,
   "fixed": [],
   "ignore": ["playground"],
+  "changedFilePatterns": ["package/**"],
   "linked": [],
   "updateInternalDependencies": "patch"
 }
