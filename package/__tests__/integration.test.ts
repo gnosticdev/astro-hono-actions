@@ -16,7 +16,7 @@ import {
     HonoActionError,
     type HonoEnv,
     type MergeActionKeyIntoPath,
-} from '../src/actions'
+} from '../src/define-action'
 import {
     VIRTUAL_MODULE_ID_CLIENT,
     VIRTUAL_MODULE_ID_ROUTER,

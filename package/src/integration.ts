@@ -36,6 +36,9 @@ const optionsSchema = z
          * - `src/hono/actions.ts`
          * - `src/hono/index.ts`
          * - `src/hono.ts`
+         * - `src/hono-actions.ts`
+         *
+         * **NOTE** `src/actions.ts` is reserved for Astro Actions and will be ignored.
          *
          * @default 'src/server/actions.ts'
          */
@@ -54,6 +57,7 @@ const ACTION_PATTERNS = [
     'src/hono/actions.ts',
     'src/hono/index.ts',
     'src/hono.ts',
+    'src/hono-actions.ts',
 ]
 
 /**
@@ -84,7 +88,7 @@ export default defineIntegration({
             )
         }
 
-        const baseResolver = createResolver(import.meta.url)
+        const { resolve } = createResolver(import.meta.url)
 
         return {
             name,
@@ -109,8 +113,7 @@ export default defineIntegration({
                         return
                     }
 
-                    const resolvedActionsPath =
-                        baseResolver.resolve(actionsPath)
+                    const resolvedActionsPath = resolve(actionsPath)
 
                     params.addWatchFile(resolvedActionsPath)
 
@@ -178,8 +181,10 @@ export default defineIntegration({
                         'client.ts',
                     )
                     // if no site in config, the client will default to '/'. this is a problem during SSR when there is no origin.
-                    if (!config.site){
-                        logger.warn('No site url found in astro config, add one if you want to use the hono client with SSR')
+                    if (!config.site) {
+                        logger.warn(
+                            'No site url found in astro config, add one if you want to use the hono client with SSR',
+                        )
                     }
                     const clientContent = generateHonoClient(config.server.port)
                     await fs.writeFile(clientPathAbs, clientContent, 'utf-8')

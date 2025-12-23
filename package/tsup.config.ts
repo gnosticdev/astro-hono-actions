@@ -3,7 +3,7 @@ import packageJson from './package.json'
 
 export default defineConfig({
     entry: {
-        actions: 'src/actions.ts', // Main entry for action definitions
+        actions: 'src/define-action.ts', // Main entry for action definitions
         index: 'src/index.ts', // Integration entry (Node.js only)
     },
     format: ['esm'],

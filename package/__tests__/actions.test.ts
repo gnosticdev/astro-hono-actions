@@ -7,7 +7,7 @@ import { logger } from 'hono/logger'
 import { prettyJSON } from 'hono/pretty-json'
 import { testClient } from 'hono/testing'
 import type { Bindings, Schema } from 'hono/types'
-import { defineHonoAction } from '../src/actions'
+import { defineHonoAction } from '../src/define-action'
 import { HonoActionError } from '../src/error'
 
 interface HonoEnv {
