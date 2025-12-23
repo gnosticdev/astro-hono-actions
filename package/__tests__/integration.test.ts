@@ -10,7 +10,7 @@ import fs from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
 import { glob } from 'tinyglobby'
-import { afterEach, beforeEach, describe, expect, it, test , } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, test } from 'vitest'
 import {
     defineHonoAction,
     HonoActionError,
@@ -26,8 +26,6 @@ import {
     generateHonoClient,
     generateRouter,
 } from '../src/integration-files'
-
-
 
 describe('Integration Tests', () => {
     // Mock the generated router for testing
@@ -98,26 +96,37 @@ describe('Integration Tests', () => {
         })
     })
 
-    describe.each(['@astrojs/cloudflare', '@astrojs/node', '@astrojs/vercel', '@astrojs/netlify'] as const)('Generated Router Integration for %s', (adapter) => {
-        test.runIf(adapter !== '@astrojs/netlify')('should generate valid router code for %s', () => {
-            const routerContent = generateRouter({
-                adapter,
-                basePath: '/api',
-                relativeActionsPath: '../actions',
-            })
+    describe.each([
+        '@astrojs/cloudflare',
+        '@astrojs/node',
+        '@astrojs/vercel',
+        '@astrojs/netlify',
+    ] as const)('Generated Router Integration for %s', (adapter) => {
+        test.runIf(adapter !== '@astrojs/netlify')(
+            'should generate valid router code for %s',
+            () => {
+                const routerContent = generateRouter({
+                    adapter,
+                    basePath: '/api',
+                    relativeActionsPath: '../actions',
+                })
 
-            expect(routerContent).toContain(`export default app`)
-        })
+                expect(routerContent).toContain('export default app')
+            },
+        )
 
-        test.runIf(adapter === '@astrojs/netlify')('should generate valid router code for %s', () => {
-            const routerContent = generateRouter({
-                adapter,
-                basePath: '/api',
-                relativeActionsPath: '../actions',
-            })
+        test.runIf(adapter === '@astrojs/netlify')(
+            'should generate valid router code for %s',
+            () => {
+                const routerContent = generateRouter({
+                    adapter,
+                    basePath: '/api',
+                    relativeActionsPath: '../actions',
+                })
 
-            expect(routerContent).toContain(`export default handle(app)`)
-        })
+                expect(routerContent).toContain('export default handle(app)')
+            },
+        )
 
         it('should generate router with correct base path', () => {
             const routerContent = generateRouter({
@@ -144,7 +153,12 @@ describe('Integration Tests', () => {
         })
     })
 
-    describe.each(['@astrojs/cloudflare', '@astrojs/node', '@astrojs/vercel', '@astrojs/netlify'] as const)('Type Generation Integration for %s', (adapter) => {
+    describe.each([
+        '@astrojs/cloudflare',
+        '@astrojs/node',
+        '@astrojs/vercel',
+        '@astrojs/netlify',
+    ] as const)('Type Generation Integration for %s', (adapter) => {
         it('should generate proper TypeScript declarations', () => {
             // Test that the generated types are valid
             const routerContent = generateRouter({

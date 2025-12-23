@@ -18,8 +18,7 @@
     "@biomejs/biome": "catalog:",
     "astro": "catalog:",
     "tsup": "^8.5.0",
-    "typescript": "catalog:",
-    "vitest": "^4.0.14"
+    "typescript": "catalog:"
   },
   "exports": {
     ".": {

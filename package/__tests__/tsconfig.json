@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
+    "rootDir": "../",
     "noUncheckedIndexedAccess": false,
     "types": ["hono", "vitest"]
   },
-  "include": ["**/*.ts"],
   "extends": "../tsconfig.json"
 }

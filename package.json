@@ -30,7 +30,7 @@
     "lint:fix": "biome check --write",
     "dev:package": "bun run --cwd package dev",
     "dev:playground": "bun run --cwd playground dev",
-    "prepublish": "bun run --cwd package typecheck && bun vitest --run && bun run build:package",
+    "prepublish": "bun run --cwd package typecheck && bun run vitest --run && bun run build:package",
     "publish": "bun changeset && bun changeset version && bun changeset publish",
     "release": "gh release create $(git tag --points-at HEAD) --generate-notes",
     "test": "vitest",

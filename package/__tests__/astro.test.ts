@@ -4,12 +4,21 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { sync as astroSync, type AstroIntegration } from 'astro'
 import { setupTestProject } from './test-utils'
 
+const NO_SCHEMA_ACTION = `
+import { defineHonoAction } from '@gnosticdev/hono-actions/actions'
+
+export const honoActions = {
+    action1: defineHonoAction({handler: async () => {return "Hello World"}}),
+}`
+
 describe('Astro Integration', async () => {
     let tmpDir: string
     let codeGenDir: string
 
     beforeEach(async () => {
-        const testProject = setupTestProject()
+        const testProject = setupTestProject({
+            actionsContent: NO_SCHEMA_ACTION,
+        })
         tmpDir = testProject.tmpDir
         codeGenDir = testProject.codeGenDir
     })

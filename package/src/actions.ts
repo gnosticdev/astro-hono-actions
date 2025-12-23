@@ -102,23 +102,28 @@ export function defineHonoAction<
 
     const route = app.post(
         '/',
-        zValidator('json', schema ?? z.never({message: 'No schema provided'}), async (result, c) => {
-            if (!result.success) {
-                console.error(result.error.issues)
-                const firstIssue = result.error.issues[0]
-                return c.json(
-                    {
-                        data: null,
-                        error: new HonoActionError({
-                            message: firstIssue?.message || 'Validation error',
-                            code: 'INPUT_VALIDATION_ERROR',
-                            issue: firstIssue,
-                        }),
-                    },
-                    400,
-                )
-            }
-        }),
+        zValidator(
+            'json',
+            schema ?? (z.any() as unknown as TSchema),
+            async (result, c) => {
+                if (!result.success) {
+                    console.error(result.error.issues)
+                    const firstIssue = result.error.issues[0]
+                    return c.json(
+                        {
+                            data: null,
+                            error: new HonoActionError({
+                                message:
+                                    firstIssue?.message || 'Validation error',
+                                code: 'INPUT_VALIDATION_ERROR',
+                                issue: firstIssue,
+                            }),
+                        },
+                        400,
+                    )
+                }
+            },
+        ),
         async (c) => {
             try {
                 const json = c.req.valid('json')
