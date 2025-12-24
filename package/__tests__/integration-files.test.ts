@@ -1,300 +1,213 @@
 import { describe, expect, it } from 'vitest'
 import {
-    generateAstroHandler,
-    generateHonoClient,
-    generateIntegrationTypes,
-    generateRouter,
+	generateAstroHandler,
+	generateHonoClient,
+	generateIntegrationTypes,
+	generateRouter,
 } from '../src/integration-files'
 
 describe('Integration Files', () => {
-    describe.each([
-        '@astrojs/cloudflare',
-        '@astrojs/node',
-        '@astrojs/vercel',
-        '@astrojs/netlify',
-    ] as const)('generateRouter for %s', (adapter) => {
-        it('should generate router with correct base path', () => {
-            const routerContent = generateRouter({
-                basePath: '/api',
-                relativeActionsPath: '../src/hono/actions',
-                adapter,
-            })
+	describe.each([
+		'@astrojs/cloudflare',
+		'@astrojs/node',
+		'@astrojs/vercel',
+	] as const)('generateRouter for %s', (adapter) => {
+		it('should match snapshot for default router', () => {
+			const routerContent = generateRouter({
+				basePath: '/api',
+				relativeActionsPath: '../actions',
+				adapter,
+			})
 
-            expect(routerContent).toContain("basePath('/api')")
-            expect(routerContent).toContain(
-                "await import('../src/hono/actions')",
-            )
-            expect(routerContent).toContain('HonoEnv')
-            expect(routerContent).toContain('buildRouter')
-            expect(routerContent).toContain('showRoutes')
-        })
+			expect(routerContent).toMatchSnapshot(`router for ${adapter}`)
+		})
 
-        it('should generate router with custom base path', () => {
-            const routerContent = generateRouter({
-                basePath: '/api/v1',
-                relativeActionsPath: './actions',
-                adapter,
-            })
+		it('should match snapshot for custom base path', () => {
+			const routerContent = generateRouter({
+				basePath: '/api/v1',
+				relativeActionsPath: './actions',
+				adapter,
+			})
 
-            expect(routerContent).toContain("basePath('/api/v1')")
-            expect(routerContent).toContain("await import('./actions')")
-        })
+			expect(routerContent).toMatchSnapshot(
+				`router for ${adapter} with custom base path`,
+			)
+		})
 
-        it('should include all necessary imports', () => {
-            const routerContent = generateRouter({
-                basePath: '/api',
-                relativeActionsPath: '../actions',
-                adapter,
-            })
+		it('should match snapshot for custom relative path', () => {
+			const routerContent = generateRouter({
+				basePath: '/api',
+				relativeActionsPath: '../src/hono/actions',
+				adapter,
+			})
 
-            expect(routerContent).toContain(
-                "import type { HonoEnv, MergeActionKeyIntoPath } from '@gnosticdev/hono-actions/actions'",
-            )
-            expect(routerContent).toContain("import { Hono } from 'hono'")
-            expect(routerContent).toContain("import { cors } from 'hono/cors'")
-            expect(routerContent).toContain(
-                "import { showRoutes } from 'hono/dev'",
-            )
-            expect(routerContent).toContain(
-                "import { logger } from 'hono/logger'",
-            )
-            expect(routerContent).toContain(
-                "import { prettyJSON } from 'hono/pretty-json'",
-            )
-        })
+			expect(routerContent).toMatchSnapshot(
+				`router for ${adapter} with custom relative path`,
+			)
+		})
+	})
 
-        it('should include middleware setup', () => {
-            const routerContent = generateRouter({
-                basePath: '/api',
-                relativeActionsPath: '../actions',
-                adapter,
-            })
+	describe('generateRouter for @astrojs/netlify', () => {
+		it('should match snapshot for default router', () => {
+			const routerContent = generateRouter({
+				basePath: '/api',
+				relativeActionsPath: '../actions',
+				adapter: '@astrojs/netlify',
+			})
 
-            expect(routerContent).toContain(
-                "app.use('*', cors(), logger(), prettyJSON())",
-            )
-        })
+			expect(routerContent).toMatchSnapshot('router for @astrojs/netlify')
+		})
 
-        it('should include action routing logic', () => {
-            const routerContent = generateRouter({
-                basePath: '/api',
-                relativeActionsPath: '../actions',
-                adapter,
-            })
+		it('should match snapshot for custom base path', () => {
+			const routerContent = generateRouter({
+				basePath: '/api/v1',
+				relativeActionsPath: './actions',
+				adapter: '@astrojs/netlify',
+			})
 
-            expect(routerContent).toContain(
-                'for (const [routeName, action] of Object.entries(honoActions))',
-            )
-            expect(routerContent).toContain(
-                'app.route(`/${routeName}`, action)',
-            )
-        })
+			expect(routerContent).toMatchSnapshot(
+				'router for @astrojs/netlify with custom base path',
+			)
+		})
 
-        it('should include type definitions', () => {
-            const routerContent = generateRouter({
-                basePath: '/api',
-                relativeActionsPath: '../actions',
-                adapter,
-            })
+		it('should match snapshot for custom relative path', () => {
+			const routerContent = generateRouter({
+				basePath: '/api',
+				relativeActionsPath: '../src/hono/actions',
+				adapter: '@astrojs/netlify',
+			})
 
-            expect(routerContent).toContain(
-                'type ActionsWithKeyedPaths = MergeActionKeyIntoPath<typeof honoActions>',
-            )
-            expect(routerContent).toContain(
-                'type ActionSchema = ExtractSchema<ActionsWithKeyedPaths[keyof ActionsWithKeyedPaths]>',
-            )
-            expect(routerContent).toContain(
-                'export type HonoRouter = Awaited<ReturnType<typeof buildRouter>>',
-            )
-        })
+			expect(routerContent).toMatchSnapshot(
+				'router for @astrojs/netlify with custom relative path',
+			)
+		})
+	})
 
-        it.runIf(adapter !== '@astrojs/netlify')(
-            'should include route display and export',
-            () => {
-                const defaultRouterContent = generateRouter({
-                    basePath: '/api',
-                    relativeActionsPath: '../actions',
-                    adapter,
-                })
+	describe.each([
+		'@astrojs/cloudflare',
+		'@astrojs/node',
+		'@astrojs/vercel',
+	] as const)('getAstroHandler for %s', (adapter) => {
+		it('should match snapshot', () => {
+			const handlerContent = generateAstroHandler(adapter)
 
-                expect(defaultRouterContent).toContain('showRoutes(app)')
-                expect(defaultRouterContent).toContain('export default app')
-            },
-        )
-        it.runIf(adapter === '@astrojs/netlify')(
-            'should include route display and export',
-            () => {
-                const netlifyRouterContent = generateRouter({
-                    basePath: '/api',
-                    relativeActionsPath: '../actions',
-                    adapter: '@astrojs/netlify',
-                })
-                expect(netlifyRouterContent).toContain(
-                    'export default handle(app)',
-                )
-            },
-        )
-    })
+			expect(handlerContent).toMatchSnapshot(`handler for ${adapter}`)
+		})
+	})
 
-    describe.each([
-        '@astrojs/cloudflare',
-        '@astrojs/node',
-        '@astrojs/vercel',
-        '@astrojs/netlify',
-    ] as const)('getAstroHandler for %s', (adapter) => {
-        it.runIf(adapter === '@astrojs/netlify')(
-            'should generate valid %s handler',
-            () => {
-                const handlerContent = generateAstroHandler(adapter)
+	describe('getAstroHandler for @astrojs/netlify', () => {
+		it('should match snapshot', () => {
+			const handlerContent = generateAstroHandler('@astrojs/netlify')
 
-                expect(handlerContent).toContain(`
-/// <reference types="./types.d.ts" />
-// Generated by Hono Actions Integration
-// adapter: ${adapter}
-import type { APIContext, APIRoute } from 'astro'
-import netlifyHandler from './router.js'
+			expect(handlerContent).toMatchSnapshot('handler for @astrojs/netlify')
+		})
+	})
 
-const handler: APIRoute<APIContext> = async (ctx) => {
-    return netlifyHandler(ctx.request, ctx)
-}
+	describe('getAstroHandler', () => {
+		it('should throw error for unsupported adapter', () => {
+			expect(() => generateAstroHandler('unsupported' as any)).toThrow(
+				'Unsupported adapter: unsupported',
+			)
+		})
+	})
 
-export { handler as ALL }
-`)
-            },
-        )
-        it.runIf(adapter === '@astrojs/cloudflare')(
-            'should generate valid %s handler',
-            () => {
-                const handlerContent = generateAstroHandler(adapter)
+	describe('generateHonoClient', () => {
+		it('should match snapshot', () => {
+			const snapshotContent = generateHonoClient(3000)
+			expect(snapshotContent).toMatchSnapshot('getHonoClient')
+		})
 
-                expect(handlerContent).toMatchSnapshot(`handler for ${adapter}`)
-            },
-        )
-        it.runIf(adapter === '@astrojs/node' || adapter === '@astrojs/vercel')(
-            'should generate valid %s handler',
-            () => {
-                const handlerContent = generateAstroHandler(adapter)
+		it('should generate client with custom port', () => {
+			const clientContent = generateHonoClient(8080)
 
-                expect(handlerContent).toContain(`
-/// <reference types="./types.d.ts" />
-// Generated by Hono Actions Integration
-// adapter: ${adapter}
-import type { APIContext, APIRoute } from 'astro'
-import router from './router.js'
+			expect(clientContent).toContain("return 'http://localhost:8080'")
+		})
+	})
 
-const handler: APIRoute<APIContext> = async (ctx) => {
-    return router.fetch(
-        ctx.request,
-    )
-}
+	describe.each([
+		'@astrojs/cloudflare',
+		'@astrojs/node',
+		'@astrojs/vercel',
+	] as const)('integration consistency for %s', (adapter) => {
+		it('should generate consistent router and client imports', () => {
+			const routerContent = generateRouter({
+				basePath: '/api',
+				relativeActionsPath: '../actions',
+				adapter,
+			})
+			const clientContent = generateHonoClient(3000)
 
-export { handler as ALL }
-`)
-            },
-        )
+			// Both should reference the same router file
+			expect(routerContent).toContain('export type HonoRouter')
+			expect(clientContent).toContain(
+				"import type { HonoRouter } from './router.js'",
+			)
+		})
 
-        it('should throw error for unsupported adapter', () => {
-            expect(() => generateAstroHandler('unsupported' as any)).toThrow(
-                'Unsupported adapter: unsupported',
-            )
-        })
-    })
+		it('should use consistent base path across generated files', () => {
+			const basePath = '/api/v1'
+			const routerContent = generateRouter({
+				basePath,
+				relativeActionsPath: '../actions',
+				adapter,
+			})
 
-    describe('generateHonoClient', () => {
-        it('should match snapshot', () => {
-            const snapshotContent = generateHonoClient(3000)
-            expect(snapshotContent).toMatchSnapshot('getHonoClient')
-        })
+			expect(routerContent).toContain(
+				`const app = new Hono<HonoEnv, MergeSchemaPath<ActionSchema, '/api/v1'>>().basePath('/api/v1')`,
+			)
+		})
+	})
 
-        it('should generate client with custom port', () => {
-            const clientContent = generateHonoClient(8080)
+	describe.each([
+		'@astrojs/cloudflare',
+		'@astrojs/node',
+		'@astrojs/vercel',
+	] as const)('edge cases for %s', (adapter) => {
+		it('should match snapshot for complex relative paths', () => {
+			const routerContent = generateRouter({
+				basePath: '/api',
+				relativeActionsPath: '../../src/server/actions',
+				adapter,
+			})
 
-            expect(clientContent).toContain("return 'http://localhost:8080'")
-        })
-    })
+			expect(routerContent).toMatchSnapshot(
+				`router for ${adapter} with complex relative path`,
+			)
+		})
+	})
 
-    describe.each([
-        '@astrojs/cloudflare',
-        '@astrojs/node',
-        '@astrojs/vercel',
-    ] as const)('integration consistency for %s', (adapter) => {
-        it('should generate consistent router and client imports', () => {
-            const routerContent = generateRouter({
-                basePath: '/api',
-                relativeActionsPath: '../actions',
-                adapter,
-            })
-            const clientContent = generateHonoClient(3000)
+	describe('edge cases', () => {
+		it('should handle port 0 (random port)', () => {
+			const clientContent = generateHonoClient(0)
 
-            // Both should reference the same router file
-            expect(routerContent).toContain('export type HonoRouter')
-            expect(clientContent).toContain(
-                "import type { HonoRouter } from './router.js'",
-            )
-        })
+			expect(clientContent).toContain("return 'http://localhost:0'")
+		})
+	})
 
-        it('should use consistent base path across generated files', () => {
-            const basePath = '/api/v1'
-            const routerContent = generateRouter({
-                basePath,
-                relativeActionsPath: '../actions',
-                adapter,
-            })
+	describe.each([
+		'@astrojs/cloudflare',
+		'@astrojs/node',
+		'@astrojs/vercel',
+		'@astrojs/netlify',
+	] as const)('generateIntegrationTypes for %s', (adapter) => {
+		it('should return both actionTypes and clientTypes', () => {
+			const result = generateIntegrationTypes(adapter)
 
-            expect(routerContent).toContain(
-                `const app = new Hono<HonoEnv, MergeSchemaPath<ActionSchema, '/api/v1'>>().basePath('/api/v1')`,
-            )
-        })
-    })
+			expect(result).toHaveProperty('actionTypes')
+			expect(result).toHaveProperty('clientTypes')
+			expect(typeof result.actionTypes).toBe('string')
+			expect(typeof result.clientTypes).toBe('string')
+		})
 
-    describe.each([
-        '@astrojs/cloudflare',
-        '@astrojs/node',
-        '@astrojs/vercel',
-    ] as const)('edge cases for %s', (adapter) => {
-        it('should handle complex relative paths', () => {
-            const routerContent = generateRouter({
-                basePath: '/api',
-                relativeActionsPath: '../../src/server/actions',
-                adapter,
-            })
+		it('should match snapshot for clientTypes', () => {
+			const { clientTypes } = generateIntegrationTypes(adapter)
 
-            expect(routerContent).toContain(
-                "await import('../../src/server/actions')",
-            )
-        })
+			expect(clientTypes).toMatchSnapshot(`clientTypes for ${adapter}`)
+		})
+		it('should match snapshot for actionTypes', () => {
+			const { actionTypes } = generateIntegrationTypes(adapter)
 
-        it('should handle port 0 (random port)', () => {
-            const clientContent = generateHonoClient(0)
-
-            expect(clientContent).toContain("return 'http://localhost:0'")
-        })
-    })
-
-    describe.each([
-        '@astrojs/cloudflare',
-        '@astrojs/node',
-        '@astrojs/vercel',
-        '@astrojs/netlify',
-    ] as const)('generateIntegrationTypes for %s', (adapter) => {
-        it('should return both actionTypes and clientTypes', () => {
-            const result = generateIntegrationTypes(adapter)
-
-            expect(result).toHaveProperty('actionTypes')
-            expect(result).toHaveProperty('clientTypes')
-            expect(typeof result.actionTypes).toBe('string')
-            expect(typeof result.clientTypes).toBe('string')
-        })
-
-        it('should match snapshot for clientTypes', () => {
-            const { clientTypes } = generateIntegrationTypes(adapter)
-
-            expect(clientTypes).toMatchSnapshot(`clientTypes for ${adapter}`)
-        })
-        it('should match snapshot for actionTypes', () => {
-            const { actionTypes } = generateIntegrationTypes(adapter)
-
-            expect(actionTypes).toMatchSnapshot(`actionTypes for ${adapter}`)
-        })
-    })
+			expect(actionTypes).toMatchSnapshot(`actionTypes for ${adapter}`)
+		})
+	})
 })

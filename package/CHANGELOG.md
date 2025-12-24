@@ -1,5 +1,17 @@
 # @gnosticdev/hono-actions
 
+## 2.0.10
+
+### Patch Changes
+
+- force discovering of hono-actions file to src directory
+
+## 2.0.9
+
+### Patch Changes
+
+- Renamed actions.ts to define-action.ts to avoid name conflicts with the resolver
+
 ## 2.0.8
 
 ### Patch Changes
